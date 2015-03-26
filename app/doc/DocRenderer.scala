@@ -3,17 +3,18 @@ package doc
 import java.net.URI
 
 import akka.actor.{Actor, Props}
+import play.api.libs.ws.WSClient
 import play.twirl.api.Html
 import views.html.conductr.index
 
 object DocRenderer {
   case class Render(path: String)
 
-  def props(githubUri: URI): Props =
-    Props(new DocRenderer(githubUri))
+  def props(githubUri: URI, wsClient: WSClient): Props =
+    Props(new DocRenderer(githubUri, wsClient))
 }
 
-class DocRenderer(githubUri: URI) extends Actor {
+class DocRenderer(githubUri: URI, wsClient: WSClient) extends Actor {
 
   import DocRenderer._
 

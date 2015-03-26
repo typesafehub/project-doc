@@ -1,16 +1,14 @@
 package controllers
 
-import java.util.concurrent.TimeUnit
-import javax.inject.{Named, Inject}
+import javax.inject.Inject
 
-import akka.actor.{ActorSystem, Props}
 import akka.pattern.{AskTimeoutException, ask}
-import akka.util.Timeout
 import doc.DocRenderer
-import play.api.Configuration
+import modules.ConductRModule.ConductRDocRendererProvider
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 import play.twirl.api.Html
+import settings.Settings
 
 object Application {
   object Project extends Enumeration {
@@ -18,22 +16,18 @@ object Application {
   }
 }
 
-class Application @Inject() (
-  @Named("conductrDocRenderer") conductrDocRendererProps: Props,
-  configuration: Configuration,
-  system: ActorSystem) extends Controller {
+class Application @Inject() (conductrDocRendererProvider: ConductRDocRendererProvider, settings: Settings)
+  extends Controller {
 
   import Application._
 
-  val conductrDocRenderer = system.actorOf(conductrDocRendererProps)
-
-  implicit val timeout = Timeout(configuration.getMilliseconds("doc.renderer.timeout").getOrElse(5000L), TimeUnit.MILLISECONDS)
+  val conductrDocRenderer = conductrDocRendererProvider.get
 
   def index(project: Project.Value, path: String) = Action.async {
     project match {
       case Project.ConductR =>
         conductrDocRenderer.actorRef
-          .ask(DocRenderer.Render(path))
+          .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
           .mapTo[Option[Html]]
           .map {
             case Some(html) => Ok(html)
