@@ -23,13 +23,16 @@ class DocRenderer(githubUri: URI, wsClient: WSClient) extends Actor {
       // TODO: This TOC will be generated
       sender() ! Some(index(Html(
         """
-          |<aside>
-          |<h1><a href="/conductr">Home</a></h1>
-          |<h1>Introducing ConductR</h1>
+          |<aside class="toc">
+          |<h3><a href="/conductr">Toc Item One</a></h3>
+          |<h3><a href="/conductr" class="active">Toc Item Two</a></h3>
           |<ul>
-          |  <li><a href="/conductr/install.html">Installation</a></li>
-          |  <li><a href="/conductr/quickstart.html">Quickstart</a></li>
+          |  <li><a href="/conductr/install.html">Toc Sub Item One</a></li>
+          |  <li><a href="/conductr/quickstart.html">Toc Sub Item Two</a></li>
+          |  <li><a href="/conductr/quickstart.html">Toc Sub Item Two</a></li>
           |</ul>
+          |<h3><a href="/conductr">Toc Item Three</a></h3>
+          |<h3><a href="/conductr">Toc Item Four</a></h3>
           |</aside>""".stripMargin)))
     case Render(_) =>
       sender() ! None
