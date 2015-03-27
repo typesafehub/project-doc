@@ -14,7 +14,7 @@ object ConductRModule {
 
     override def get =
       actorSystem.actorOf(DocRenderer.props(
-        new URI("https://github.com/typesafehub/typesafe-conductr/tree/master/doc"),
+        new URI("https://github.com/huntc/conductr-doc/archive/master.zip"),
         wsClient), "conductr-doc-renderer")
   }
 }
