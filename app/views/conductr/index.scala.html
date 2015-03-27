@@ -1,11 +1,18 @@
 @(toc: Html)
 
-@main("ConductR - A Reactive Application Manager for Operations") {
+@main("ConductR - A Reactive Application Manager for Operations", "Context Title Here") {
 
-    <h1>Welcome to Typesafe ConductR</h1>
-
-    <p>Some great intro to ConductR.</p>
-
-    @toc
+    <div class="fw-wrapper page-content">
+        <div class="row">
+            <div class="small-8 columns">
+                <h1>Today’s demands on Operations are simply not met by yesterday’s software architectures and technologies</h1>
+                <p>Reactive application development becoming mainstream is leading to demands on Operations that are simply not met by yesterday’s software architectures and technologies.</p>
+                <p>The demands placed on systems are ruthless nowadays. Starting with global expansion in mobile technology and continuing now with IoT, Operations deals with exponentially greater loads; yet for all their efforts, services provided by airlines, banks, retailers and telecommunications providers are still perceived to be sluggish.</p>
+            </div>
+            <div class="small-4 columns">
+                @toc
+            </div>
+        </div>
+    </div>
 
 }
