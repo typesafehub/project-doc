@@ -1,6 +1,7 @@
 package modules
 
 import java.net.URI
+import java.nio.file.Paths
 import javax.inject.{Provider, Inject, Singleton}
 
 import akka.actor.{ActorRef, ActorSystem}
@@ -15,6 +16,9 @@ object ConductRModule {
     override def get =
       actorSystem.actorOf(DocRenderer.props(
         new URI("https://github.com/huntc/conductr-doc/archive/master.zip"),
+        Paths.get("src/main/play-doc"),
+        new URI("/conductr"),
+        removeRootSegment = true,
         wsClient), "conductr-doc-renderer")
   }
 }
