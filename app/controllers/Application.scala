@@ -28,12 +28,14 @@ class Application @Inject() (conductrDocRendererProvider: ConductRDocRendererPro
       case Project.ConductR =>
         conductrDocRenderer.actorRef
           .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
-          .mapTo[Option[Html]]
           .map {
-            case Some(html) => Ok(html)
-            case None       => NotFound
+            case html: Html              => Ok(html)
+            case DocRenderer.NotFound(p) => NotFound(s"Cannot find $p")
+            case DocRenderer.NotReady    => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
           }
-          .recover { case _: AskTimeoutException => NotFound }
+          .recover {
+            case _: AskTimeoutException => InternalServerError
+          }
     }
   }
 }
