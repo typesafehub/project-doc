@@ -28,7 +28,7 @@ routesImport += "controllers.Application.Project"
 
 JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 StylusKeys.useNib in Assets := true
-StylusKeys.compress in Assets := true
+StylusKeys.compress in Assets := false
 
 // Project/module declarations
 
