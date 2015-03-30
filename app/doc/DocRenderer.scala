@@ -4,7 +4,7 @@ import java.io.{File, FileOutputStream}
 import java.net.URI
 import java.nio.file.{Paths, Path, Files}
 
-import akka.actor.{Actor, Props}
+import akka.actor.{ActorLogging, Actor, Props}
 import akka.pattern.pipe
 import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.io.{FileUtils, IOUtils}
@@ -35,6 +35,13 @@ object DocRenderer {
    */
   case object NotReady
 
+  /**
+   * Request that the site be retrieved. This is done initially on the establishment of the renderer,
+   * but can be re-requested at any other time e.g. when needing to update the site due to the
+   * documentation source having been updated.
+   */
+  case object GetSite
+  
   private[doc] sealed trait Entry
   private[doc] case class Folder(name: String, documents: immutable.Seq[Entry]) extends Entry
   private[doc] case class Document(name: String, ref: URI) extends Entry
@@ -133,30 +140,36 @@ class DocRenderer(
   docRoot: Path,
   siteContext: URI,
   removeRootSegment: Boolean,
-  wsClient: WSClient) extends Actor {
+  wsClient: WSClient) extends Actor with ActorLogging {
 
   import DocRenderer._
   import context.dispatcher
 
   override def preStart(): Unit =
-    wsClient.url(docArchive.toString).getStream().pipeTo(self)
-
+    self ! GetSite
+  
   override def receive: Receive =
-    receiveSite
+    handleSiteRetrieval.orElse(handleUnready)
 
-  private def receiveSite: Receive = {
+  private def handleSiteRetrieval: Receive = {
+    case GetSite =>
+      log.info(s"Retrieving doc for $docArchive")
+      wsClient.url(docArchive.toString).getStream().pipeTo(self)
+
     case (_: WSResponseHeaders, body: Enumerator[Array[Byte]] @unchecked) =>
       unzip(body, removeRootSegment).pipeTo(self)
 
     case docDir: Path =>
+      log.info(s"Doc retrieved for $docArchive")
       val toc = aggregateToc(docDir.resolve(docRoot), siteContext)
-      context.become(renderer(docDir, toc, LruCache[Html]()))
-
-    case _ =>
-      sender() ! NotReady
+      context.become(handleSiteRetrieval.orElse(handleRendering(docDir, toc, LruCache[Html]())))
+  }
+  
+  private def handleUnready: Receive = {
+    case _ => sender() ! NotReady
   }
 
-  private def renderer(docDir: Path, toc: Html, cache: Cache[Html]): Receive = {
+  private def handleRendering(docDir: Path, toc: Html, cache: Cache[Html]): Receive = {
     case Render(path) if path.isEmpty || path == "/" =>
       cache("/") {
         index(toc)

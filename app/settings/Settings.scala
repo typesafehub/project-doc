@@ -12,4 +12,10 @@ class Settings @Inject() (configuration: Configuration) {
       val timeout = Timeout(configuration.getMilliseconds("doc.renderer.timeout").getOrElse(5000L), TimeUnit.MILLISECONDS)
     }
   }
+
+  object play {
+    object crypto {
+      val secret = configuration.getString("play.crypto.secret").getOrElse("secret")
+    }
+  }
 }
