@@ -1,11 +1,12 @@
+@import vars
 body
     font-weight: 400
     font-style: normal
     line-height: 1.4em
     position: relative
     cursor: default
-    font: 1em typesafe-fonts
-    color: navy
+    font: 1em $typesafe-fonts
+    color: $navy
     font-smoothing: antialiased
     -webkit-font-size-adjust: none
     text-rendering: optimizeLegibility
@@ -13,7 +14,7 @@ h1
     font-family: inherit
     font-size: 2em
     font-weight: 300
-    color: navy
+    color: $navy
     margin-bottom: 0.4em
     margin-top: 1.1em
     &:first-child
@@ -24,33 +25,33 @@ h2
     margin-bottom: 0.2em
     margin-top: 1.3em
     font-weight: 300
-    color: navy
+    color: $navy
     &:first-child
         margin-top: 0
 h3, .panel h3
     font-family: inherit
     font-size: 1.125em
     font-weight: 700
-    color: navy
+    color: $navy
     &:first-child
         margin-top: 0
 h4
     font-family: inherit
     font-size: 1em
     font-weight: 700
-    color: navy
+    color: $navy
     &:first-child
         margin-top: 0
 h5
     font-family: inherit
     font-size: 1em
-    color: navy
+    color: $navy
     &:first-child
         margin-top: 0
 h6
     font-family: inherit
     font-size: 1em
-    color: navy
+    color: $navy
     &:first-child
         margin-top: 0
 
@@ -60,38 +61,38 @@ p
     line-height: 1.45em
     margin-bottom: 1em
     margin-top: 0em
-    color: navy
+    color: $navy
 a
     font-family: inherit
-    color: blue-text
+    color: $blue-text
     text-decoration: none
     cursor: pointer
     outline:none
     &:link
-        color: blue-text
+        color: $blue-text
         outline:none
     &:visited
-        color: blue-text
+        color: $blue-text
         outline:none
     &:hover
-        color: blue-text
+        color: $blue-text
         text-decoration: underline
         outline:none
     &:active
-        color: blue-text
+        color: $blue-text
         outline:none
 
 h1 a, h2 a
     font-family: inherit
-    color: navy
+    color: $navy
     text-decoration: none
     cursor: pointer
     &:link
-        color: navy
+        color: $navy
     &:visited
-        color: navy
+        color: $navy
     &:hover
-        color: blue-text
+        color: $blue-text
         text-decoration: none
     &:active
-        color: navy
+        color: $navy
