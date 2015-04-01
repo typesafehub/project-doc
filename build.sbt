@@ -44,5 +44,9 @@ BundleKeys.nrOfCpus := 1.0
 BundleKeys.memory := 64.MiB
 BundleKeys.diskSpace := 50.MiB
 BundleKeys.roles := Set("web-doc")
+<<<<<<< HEAD
 BundleKeys.endpoints := Map("webdoc" -> Endpoint("http", 0, Set(URI("http://conductr.typesafe.com"))))
+=======
+BundleKeys.endpoints := Map("webdoc" -> Endpoint("http", 0, Set(URI("http://:9000"))))
+>>>>>>> 41bac5ed5623041f3b6a9a31e9ac9226b8f677be
 BundleKeys.startCommand += "-Dhttp.port=$WEBDOC_BIND_PORT -Dhttp.address=$WEBDOC_BIND_IP"
