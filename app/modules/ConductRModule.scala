@@ -16,9 +16,10 @@ object ConductRModule {
     override def get =
       actorSystem.actorOf(DocRenderer.props(
         new URI("https://github.com/huntc/conductr-doc/archive/master.zip"),
+        removeRootSegment = true,
         Paths.get("src/main/play-doc"),
         new URI("/conductr"),
-        removeRootSegment = true,
+        "1.0.x",
         wsClient), "conductr-doc-renderer")
   }
 }

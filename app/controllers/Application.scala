@@ -1,5 +1,6 @@
 package controllers
 
+import java.io.File
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
@@ -49,8 +50,9 @@ object Application {
   }
 }
 
-class Application @Inject() (conductrDocRendererProvider: ConductRDocRendererProvider, settings: Settings)
-  extends Controller {
+class Application @Inject() (
+  conductrDocRendererProvider: ConductRDocRendererProvider,
+  settings: Settings) extends Controller {
 
   import Application._
 
@@ -61,20 +63,22 @@ class Application @Inject() (conductrDocRendererProvider: ConductRDocRendererPro
 
   private val secret = new SecretKeySpec(settings.play.crypto.secret.getBytes, MacAlgorithm)
 
-  def render(project: Project.Value, path: String) = Action.async {
-    project match {
+  def render(project: Project.Value, path: String) = EssentialAction { rh =>
+    val futureAction = project match {
       case Project.ConductR =>
         conductrDocRenderer.actorRef
           .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
           .map {
-            case html: Html              => Ok(html)
-            case DocRenderer.NotFound(p) => NotFound(s"Cannot find $p")
-            case DocRenderer.NotReady    => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
+            case html: Html              => Action(Ok(html))(rh)
+            case resource: File          => Action(Ok.sendFile(resource))(rh)
+            case DocRenderer.NotFound(p) => Action(NotFound(s"Cannot find $p"))(rh)
+            case DocRenderer.NotReady    => Action(ServiceUnavailable("Initializing documentation. Please try again in a minute."))(rh)
           }
           .recover {
-            case _: AskTimeoutException => InternalServerError
+            case _: AskTimeoutException => Action(InternalServerError)(rh)
           }
     }
+    Iteratee.flatten(futureAction)
   }
 
   def update(project: Project.Value) = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { _ =>
