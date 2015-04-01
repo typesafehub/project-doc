@@ -1,0 +1,17 @@
+@(b: Html, toc: Html)
+
+@main("ConductR - A Reactive Application Manager for Operations", "Context Title Here", toc) {
+
+    <div class="fw-wrapper page-content">
+        <div class="row">
+            <div class="small-12 medium-7 large-8 columns">
+                @b
+            </div>
+            <div class="medium-5 large-4 hide-for-small-only columns">
+                <div class="in-page-toc">
+                    @toc
+                </div>
+            </div>
+        </div>
+    </div>
+}

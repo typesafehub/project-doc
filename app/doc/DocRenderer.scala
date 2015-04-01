@@ -1,8 +1,8 @@
 package doc
 
-import java.io.{File, FileOutputStream}
+import java.io.{FileNotFoundException, File, FileOutputStream}
 import java.net.URI
-import java.nio.file.{Paths, Path, Files}
+import java.nio.file.{Path, Files}
 
 import akka.actor.{ActorLogging, Actor, Props}
 import akka.pattern.pipe
@@ -10,9 +10,10 @@ import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.io.{FileUtils, IOUtils}
 import play.api.libs.iteratee.{Enumerator, Iteratee}
 import play.api.libs.ws.{WSResponseHeaders, WSClient}
+import play.doc.{PlayDoc, FilesystemRepository}
 import play.twirl.api.Html
 import spray.caching.{Cache, LruCache}
-import views.html.conductr.index
+import views.html.conductr.{body, index}
 
 import scala.collection.immutable
 import scala.collection.JavaConverters._
@@ -47,11 +48,17 @@ object DocRenderer {
   private[doc] case class Document(name: String, ref: URI) extends Entry
 
   final private val CopyBufferSize = 8192
-  final private val HtmlExt = ".html"
+  final private val HtmlExt = "html"
   final private val TocFilename = "index.toc"
 
-  def props(docArchive: URI, docRoot: Path, siteContext: URI, removeRootSegment: Boolean, wsClient: WSClient): Props =
-    Props(new DocRenderer(docArchive, docRoot, siteContext, removeRootSegment, wsClient))
+  def props(
+    docArchive: URI,
+    removeRootSegment: Boolean,
+    docRoot: Path,
+    siteContext: URI,
+    version: String,
+    wsClient: WSClient): Props =
+    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, siteContext, version, wsClient))
   
   private[doc] def unzip(input: Enumerator[Array[Byte]], removeRootSegment: Boolean)(implicit ec: ExecutionContext): Future[Path] = {
     val archive = Files.createTempFile(null, null)
@@ -124,11 +131,14 @@ object DocRenderer {
         val subTargetUri = new URI(s"$targetUri/$filename")
         createEntries(subDocDir, subTargetUri, Folder(name, List.empty))
       } else {
-        Document(name, new URI(s"$targetUri/$filename$HtmlExt"))
+        Document(name, new URI(s"$targetUri/$filename.$HtmlExt"))
       }
     }
     folder.copy(documents = folder.documents ++ newDocuments)
   }
+
+  private def getName(path: String): String =
+    path.drop(1).reverse.dropWhile(_ != '.').drop(1).takeWhile(_ != '/').reverse.dropWhile(_ == '/')
 }
 
 /**
@@ -137,9 +147,10 @@ object DocRenderer {
  */
 class DocRenderer(
   docArchive: URI,
+  removeRootSegment: Boolean,
   docRoot: Path,
   siteContext: URI,
-  removeRootSegment: Boolean,
+  version: String,
   wsClient: WSClient) extends Actor with ActorLogging {
 
   import DocRenderer._
@@ -161,21 +172,39 @@ class DocRenderer(
 
     case docDir: Path =>
       log.info(s"Doc retrieved for $docArchive")
-      val toc = aggregateToc(docDir.resolve(docRoot), siteContext)
-      context.become(handleSiteRetrieval.orElse(handleRendering(docDir, toc, LruCache[Html]())))
+
+      val docSources = docDir.resolve(docRoot)
+      val toc = aggregateToc(docSources, siteContext)
+
+      val repo = new FilesystemRepository(docSources.toFile)
+      val mdRenderer = new PlayDoc(repo, repo, "resources", version)
+
+      context.become(handleSiteRetrieval.orElse(handleRendering(docSources, mdRenderer, toc, LruCache[Html]())))
   }
   
   private def handleUnready: Receive = {
     case _ => sender() ! NotReady
   }
 
-  private def handleRendering(docDir: Path, toc: Html, cache: Cache[Html]): Receive = {
-    case Render(path) if path.isEmpty || path == "/" =>
+  private def handleRendering(docSources: Path, mdRenderer: PlayDoc, toc: Html, cache: Cache[Html]): Receive = {
+    case Render(path) if path.isEmpty || path == "/" || path == s"/Home.$HtmlExt" =>
       cache("/") {
         index(toc)
       }.pipeTo(sender())
 
+    case Render(path) if path.endsWith(HtmlExt)=>
+      cache(path) {
+        val mdFilename = getName(path)
+        mdRenderer.renderPage(mdFilename) match {
+          case Some(renderedPage) => body(Html(renderedPage.html), toc)
+          case None               => throw new FileNotFoundException(mdFilename)
+        }
+      }.recover {
+        case _: FileNotFoundException => NotFound(path)
+      }.pipeTo(sender())
+
     case Render(path) =>
-      sender() ! NotFound(path)
+      val resource = docSources.resolve(path.drop(1)).toFile
+      sender() ! (if (resource.exists()) resource else NotFound(path))
   }
 }
