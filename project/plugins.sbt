@@ -1,4 +1,4 @@
-resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
+resolvers ++= Seq(Resolver.bintrayRepo("akka-contrib-extra", "maven"))
 
 // The Play plugin
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.0-M3")
@@ -16,3 +16,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-mocha" % "1.0.2")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
+
+// conductR
+addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.27.0")
