@@ -1,0 +1,256 @@
+@import vars
+body
+    background: $navy
+    padding: 0
+    margin: 0
+
+.fw-wrapper
+    padding: 60px 0px
+    &.flush
+        padding: 0
+    &.flush-top
+        padding: 0 0 60px 0
+    &.flush-bottom
+        padding: 60px 0 0 0
+    &.grey
+        background-color: $grey
+    &.slate
+        background-color: $slate
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.slate-dkr
+        background-color: $slate-dkr
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.slate-ltr
+        background-color: $slate-ltr
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.slate-tt
+        background-color: $slate-tt
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.white-ltr
+        background-color: $white-ltr
+    &.white-dkr
+        background-color: $white-dkr
+    &.teal-blue
+        background-color: $teal-blue
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.blue
+        background-color: $blue
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.blue-dkr
+        background-color: $blue-dkr
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.red
+        background-color: $red
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.navy
+        background-color: $navy
+        box-shadow: inset 0 -3px 0 rgba(black,.1)
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.shadow
+        box-shadow: inset 0 -3px 0 rgba(black,.1)
+    &.shadow-dark
+        box-shadow: inset 0 -3px 0 rgba(black,.2)
+    &.play
+        background-color: $play-green
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.playday
+        border-top: 6px $play-dkr solid
+    &.akka
+        background-color: $akka-blue
+        h1,h2,h3,h4,p,a
+            color: $white
+    &.scala
+        background-color: $scala-red
+        h1,h2,h3,h4,p,a
+            color: $white
+
+#site-header
+    background: $white
+    margin: 0px 0 5px 0
+    height: 75px
+    border-top: 5px solid $navy
+    position: fixed
+    display: block
+    width: 100%
+    z-index: 9999
+    box-shadow: 0 0 8px rgba(black,.5)
+    &.fw-wrapper
+        padding: 0
+    .logo
+        float: right
+        .svg-icon-conductr-logo
+            height: 50px
+            width: 147px
+            margin: 8px 0 0 0
+        .beta
+            display: inline-block
+            padding: 4px 8px
+            background: $blue
+            border-radius: 100px
+            color: $white
+            vertical-align: top
+            margin-top: 10px
+            margin-left: -5px
+            font-size: 0.7em
+        &:hover
+            text-decoration: none
+    .left-off-canvas-toggle
+        float: left
+        .svg-icon-menu
+            height: 40px
+            width: 40px
+            margin-top: 15px
+            .svg-icon-menu-path
+                fill: $navy
+                transition: $anime
+            &:hover .svg-icon-menu-path
+                fill: $blue
+                transition: $anime
+    nav
+        float: right
+        border-right: 1px solid $white-dkr
+        zoom: 1
+        ul
+            margin: 0
+            padding: 0
+            li
+                display: inline
+                a
+                    display: block
+                    float: left
+                    height: 70px
+                    line-height: 70px
+                    padding: 0 30px
+                    color: navy
+                    border-left: 1px solid $white-dkr
+                    font-weight: bold
+                    font-stretch: condensed
+                    letter-spacing: -.03em
+                    font-size: 14px
+                    transition: all 150ms ease-in-out
+                    text-transform: uppercase
+                    &:link, &:visited
+                        color: $navy
+                    &:hover
+                        background: rgba(#f0f3f6,0.2)
+                        box-shadow: inset 0 4px 0 $navy,inset 0 0 1px $grey-ltr
+                        transition: all 150ms ease-in-out
+                        text-decoration: none
+                    &:active
+                        color: $navy
+                .svg-icon-typesafe-full-color
+                    width: 100px
+                    height: 40px
+                    margin-top: 15px
+@media only screen and (min-width: $medium)
+    #site-header .logo
+        float: left
+
+.page-title
+    min-height: 140px
+    padding: 90px 0 20px 0
+    h3
+        color: $white
+        font-size: 1.4em
+        margin: 0
+        font-weight: 400
+        text-transform: uppercase
+
+.page-content
+    background: $white-ltr
+    min-height: 600px
+
+.left-off-canvas-menu
+    color: $white
+    .canvas-menu-wrap
+        border-bottom: 1px solid rgba(128,128,128,0.2)
+    ul
+        margin: 0
+        padding: 0
+        > li
+            padding: 8px 10px
+            border-bottom: 1px solid rgba(0,0,0,0.3)
+            border-top: 1px solid rgba(128,128,128,0.2)
+            list-style-type: none
+            font-size: 1.25em
+            transition: $anime
+            text-transform: uppercase
+            &:hover
+                background: rgba(0,0,0,0.3)
+                transition: $anime
+            > ul li
+                font-size: 1em
+                border-bottom: 1px solid rgba(0,0,0,0.3)
+                border-top: 1px solid rgba(128,128,128,0.2)
+                padding: 8px 10px
+                text-transform: capitalize
+                border-radius: $br
+                transition: $anime
+                &:first-child
+                    border-top: none
+                &:last-child
+                    border-bottom: none
+                &:hover
+                    background: rgba(0,0,0,0.4)
+                    transition: $anime
+        a
+            display: block
+            &:hover
+                text-decoration: none
+
+.in-page-toc
+    padding: 20px 20px 20px 40px
+    background: $white
+    background: linear-gradient(left,0% $white-ltr,5% $white)
+    box-shadow: shadow
+    border-radius: $br
+    border: 1px solid $white-dkr
+    border-bottom: 3px solid $white-dkr
+    h3, h3 a
+        color: $navy
+        &:hover
+            text-decoration: none
+            color: $blue-text
+        &.active
+            color: $blue-text
+    ul
+        margin: 0
+        padding: 0
+        > li
+            list-style-type: none
+            font-size: 1.4em
+            > ul li
+                font-size: 0.8em
+                padding-left: 1em
+
+#site-footer
+    color: $white
+    .footer-toc ul
+        margin: 0
+        padding: 0
+        li
+            list-style-type: none
+            padding: 0
+            >ul li
+                padding-left: 1em
+    .logo-copyright
+        height: 30px
+        line-height: 28px
+        vertical-align: top
+        font-weight: 700
+        .svg-icon
+            width: 100px
+            height: 30px
+
+.off-canvas-wrap.move-right, .move-right > .inner-wrap
+    height: 100%
