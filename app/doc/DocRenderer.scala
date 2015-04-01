@@ -205,6 +205,9 @@ class DocRenderer(
 
     case Render(path) =>
       val resource = docSources.resolve(path.drop(1)).toFile
-      sender() ! (if (resource.exists()) resource else NotFound(path))
+      sender() ! (if (resource.exists() && resource.getAbsolutePath.startsWith(docSources.toString))
+        resource
+      else
+        NotFound(path))
   }
 }
