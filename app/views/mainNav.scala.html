@@ -1,4 +1,8 @@
+@(showIcon: Boolean)
 <ul>
-    <li><a href="#">Menu Item</a></li>
-    <li><a href="#">Menu Item</a></li>
+    @if(showIcon) {
+        <li><a href="http://www.typesafe.com">@svg.typesafeFullColor()</a></li>
+    } else {
+        <li><a href="http://www.typesafe.com">Typesafe</a></li>
+    }
 </ul>
