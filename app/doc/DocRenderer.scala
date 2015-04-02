@@ -47,7 +47,6 @@ object DocRenderer {
   private[doc] case class Folder(name: String, documents: immutable.Seq[Entry]) extends Entry
   private[doc] case class Document(name: String, ref: URI) extends Entry
 
-  final private val CopyBufferSize = 8192
   final private val HtmlExt = "html"
   final private val TocFilename = "index.toc"
 
@@ -93,7 +92,7 @@ object DocRenderer {
         Files.createDirectories(path.getParent)
         val out = Files.newOutputStream(path)
         try {
-          IOUtils.copyLarge(zipFile.getInputStream(entry), out, 0, CopyBufferSize)
+          IOUtils.copy(zipFile.getInputStream(entry), out)
         } finally {
           out.close()
         }
