@@ -32,6 +32,7 @@ h3, .panel h3
     font-family: inherit
     font-size: 1.125em
     font-weight: 700
+    margin-top: 1.3em
     color: $navy
     &:first-child
         margin-top: 0
@@ -39,18 +40,21 @@ h4
     font-family: inherit
     font-size: 1em
     font-weight: 700
+    margin-top: 1.3em
     color: $navy
     &:first-child
         margin-top: 0
 h5
     font-family: inherit
     font-size: 1em
+    margin-top: 1.3em
     color: $navy
     &:first-child
         margin-top: 0
 h6
     font-family: inherit
     font-size: 1em
+    margin-top: 1.3em
     color: $navy
     &:first-child
         margin-top: 0
@@ -96,3 +100,26 @@ h1 a, h2 a
         text-decoration: none
     &:active
         color: $navy
+
+code
+    line-height: 1.45em
+
+blockquote
+    background: $white
+    border-left: 10px solid $red
+    margin: 1.5em 0
+    padding: 1em 20px
+    quotes: "\201C""\201D""\2018""\2019"
+
+blockquote:before
+    color: $red
+    content: open-quote
+    font-size: 4em
+    line-height: 0.1em
+    margin-right: 0.25em
+    vertical-align: -0.4em
+
+blockquote p
+    display: inline
+    color: $navy
+    font-style: italic
