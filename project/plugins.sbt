@@ -1,5 +1,5 @@
 resolvers ++= Seq(
-  "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
+  Resolver.bintrayRepo("akka-contrib-extra", "maven"),
   Resolver.url("GitHub repository", url("http://shaggyyeti.github.io/releases"))(Resolver.ivyStylePatterns)
 )
 
@@ -21,3 +21,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-mocha" % "1.0.2")
 addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 
 addSbtPlugin("default" % "sbt-sass" % "0.1.9")
+
+// conductR
+addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.27.0")
