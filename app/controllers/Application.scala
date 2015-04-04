@@ -63,6 +63,10 @@ class Application @Inject() (
 
   private val secret = new SecretKeySpec(settings.play.crypto.secret.getBytes, MacAlgorithm)
 
+  def home = EssentialAction {
+    render(Project.ConductR, "")
+  }
+
   def render(project: Project.Value, path: String) = EssentialAction { rh =>
     val futureAction = project match {
       case Project.ConductR =>
