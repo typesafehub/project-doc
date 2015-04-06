@@ -1,7 +1,6 @@
 package doc
 
 import java.io.File
-import java.net.URI
 
 import org.scalatest.Matchers
 import org.scalatest.WordSpecLike
@@ -23,16 +22,16 @@ class DocRendererSpec extends WordSpecLike with Matchers {
 
     "Form html from the toc files of the zipped stream" in {
       val docDir = new File(getClass.getClassLoader.getResource("conductr-doc").toURI).toPath
-      val html = DocRenderer.aggregateToc(docDir.resolve("src/main/play-doc"), new URI("/conductr"))
+      val html = DocRenderer.aggregateToc(docDir.resolve("src/main/play-doc"))
       html.toString() shouldBe
         """<aside>
           |    <ul>
-          |        <li><a href="/conductr/Home.html">Home</a></li>
+          |        <li><a href="/Home.html">Home</a></li>
           |        <li>Introduction
           |            <ul>
-          |                <li><a href="/conductr/intro/Intro.html">Introducing ConductR</a></li>
-          |                <li><a href="/conductr/intro/Install.html">Installation</a></li>
-          |                <li><a href="/conductr/intro/Quickstart.html">Quickstart</a></li>
+          |                <li><a href="/intro/Intro.html">Introducing ConductR</a></li>
+          |                <li><a href="/intro/Install.html">Installation</a></li>
+          |                <li><a href="/intro/Quickstart.html">Quickstart</a></li>
           |            </ul>
           |        </li>
           |    </ul>

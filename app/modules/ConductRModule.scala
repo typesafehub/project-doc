@@ -13,13 +13,15 @@ object ConductRModule {
   @Singleton
   class ConductRDocRendererProvider @Inject()(actorSystem: ActorSystem, wsClient: WSClient) extends Provider[ActorRef] {
 
-    override def get =
+    private val renderer =
       actorSystem.actorOf(DocRenderer.props(
         new URI("https://github.com/huntc/conductr-doc/archive/master.zip"),
         removeRootSegment = true,
         Paths.get("src/main/play-doc"),
-        new URI("/conductr"),
         "1.0.x",
         wsClient), "conductr-doc-renderer")
+
+    override def get = renderer
+
   }
 }

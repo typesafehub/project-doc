@@ -54,10 +54,9 @@ object DocRenderer {
     docArchive: URI,
     removeRootSegment: Boolean,
     docRoot: Path,
-    siteContext: URI,
     version: String,
     wsClient: WSClient): Props =
-    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, siteContext, version, wsClient))
+    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, version, wsClient))
   
   private[doc] def unzip(input: Enumerator[Array[Byte]], removeRootSegment: Boolean)(implicit ec: ExecutionContext): Future[Path] = {
     val archive = Files.createTempFile(null, null)
@@ -102,10 +101,10 @@ object DocRenderer {
     }
   }
 
-  private[doc] def aggregateToc(docDir: Path, siteContext: URI): Html = {
+  private[doc] def aggregateToc(docDir: Path): Html = {
     import HtmlPrettyPrinter._
 
-    val folder = createEntries(docDir, siteContext, Folder("", List.empty))
+    val folder = createEntries(docDir, new URI(""), Folder("", List.empty))
 
     def toDoc(documents: immutable.Seq[Entry]): Doc =
       ul(documents.map {
@@ -148,7 +147,6 @@ class DocRenderer(
   docArchive: URI,
   removeRootSegment: Boolean,
   docRoot: Path,
-  siteContext: URI,
   version: String,
   wsClient: WSClient) extends Actor with ActorLogging {
 
@@ -173,7 +171,7 @@ class DocRenderer(
       log.info(s"Doc retrieved for $docArchive")
 
       val docSources = docDir.resolve(docRoot)
-      val toc = aggregateToc(docSources, siteContext)
+      val toc = aggregateToc(docSources)
 
       val repo = new FilesystemRepository(docSources.toFile)
       val mdRenderer = new PlayDoc(repo, repo, "resources", version)
@@ -186,7 +184,7 @@ class DocRenderer(
   }
 
   private def handleRendering(docSources: Path, mdRenderer: PlayDoc, toc: Html, cache: Cache[Html]): Receive = {
-    case Render(path) if path.isEmpty || path == "/" || path == s"/Home.$HtmlExt" =>
+    case Render(path) if path.isEmpty || path == "/" || path == s"Home.$HtmlExt" =>
       cache("/") {
         index(toc)
       }.pipeTo(sender())
@@ -203,7 +201,7 @@ class DocRenderer(
       }.pipeTo(sender())
 
     case Render(path) =>
-      val resource = docSources.resolve(path.drop(1)).toFile
+      val resource = docSources.resolve(path).toFile
       sender() ! (if (resource.exists() && resource.getAbsolutePath.startsWith(docSources.toString))
         resource
       else

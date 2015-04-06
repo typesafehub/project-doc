@@ -5,6 +5,7 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
+import akka.actor.ActorRef
 import akka.pattern.{AskTimeoutException, ask}
 import doc.DocRenderer
 import modules.ConductRModule.ConductRDocRendererProvider
@@ -14,10 +15,9 @@ import play.api.mvc._
 import play.twirl.api.Html
 import settings.Settings
 
+import scala.concurrent.Future
+
 object Application {
-  object Project extends Enumeration {
-    val ConductR = Value
-  }
 
   private[controllers] object MacBodyParser {
     def apply(hmacHeader: String, secret: SecretKeySpec, algorithm: String) =
@@ -48,6 +48,19 @@ object Application {
       }
     }
   }
+
+  private def getDocRenderer(
+    host: String,
+    docRenderers: Map[String, ActorRef],
+    hostPrefixAliases: Map[String, String]): Option[ActorRef] = {
+    val hostPrefix = host.takeWhile(c => c != '.' && c != ':')
+    docRenderers.get(hostPrefix).orElse {
+      hostPrefixAliases.get(hostPrefix) match {
+        case Some(aliasedHostPrefix) => docRenderers.get(aliasedHostPrefix)
+        case None                    => None
+      }
+    }
+  }
 }
 
 class Application @Inject() (
@@ -59,33 +72,46 @@ class Application @Inject() (
   private final val MacAlgorithm = "HmacSHA1"
   private final val GitHubSignature = "X-Hub-Signature"
 
-  private val conductrDocRenderer = conductrDocRendererProvider.get
+  private val docRenderers = Map("conductr" -> conductrDocRendererProvider.get)
 
   private val secret = new SecretKeySpec(settings.play.crypto.secret.getBytes, MacAlgorithm)
 
-  def render(project: Project.Value, path: String) = EssentialAction { rh =>
-    val futureAction = project match {
-      case Project.ConductR =>
-        conductrDocRenderer.actorRef
-          .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
-          .map {
-            case html: Html              => Action(Ok(html))(rh)
-            case resource: File          => Action(Ok.sendFile(resource))(rh)
-            case DocRenderer.NotFound(p) => Action(NotFound(s"Cannot find $p"))(rh)
-            case DocRenderer.NotReady    => Action(ServiceUnavailable("Initializing documentation. Please try again in a minute."))(rh)
-          }
-          .recover {
-            case _: AskTimeoutException => Action(InternalServerError)(rh)
-          }
+  def render(path: String) = Action.async { request =>
+    request.headers.get(HOST) match {
+      case Some(host) =>
+        getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
+          case Some(docRenderer) =>
+            docRenderer
+              .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
+              .map {
+              case html: Html               => Ok(html)
+              case resource: File           => Ok.sendFile(resource)
+              case DocRenderer.NotFound(rp) => NotFound(s"Cannot find $rp")
+              case DocRenderer.NotReady     => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
+            }
+            .recover {
+              case _: AskTimeoutException => InternalServerError
+            }
+          case None =>
+            Future.successful(NotFound(s"Unknown project: $host"))
+        }
+      case None =>
+        Future.successful(NotFound("No host header"))
     }
-    Iteratee.flatten(futureAction)
   }
 
-  def update(project: Project.Value) = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { _ =>
-    project match {
-      case Project.ConductR =>
-        conductrDocRenderer.actorRef ! DocRenderer.GetSite
-        Ok("Site update requested")
+  def update(path: String) = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
+    request.headers.get(HOST) match {
+      case Some(host) =>
+        getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
+          case Some(docRenderer) =>
+            docRenderer ! DocRenderer.GetSite
+            Ok("Site update requested")
+          case None =>
+            NotFound(s"Unknown project: $host")
+        }
+      case None =>
+        NotFound("No host header")
     }
   }
 }
