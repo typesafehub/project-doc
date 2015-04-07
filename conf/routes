@@ -1,6 +1,5 @@
 
-GET     /conductr$path<.*>          controllers.Application.render(project: Project.Value = Project.ConductR, path)
+GET         /assets/*file        controllers.Assets.at(path="/public", file)
 
-POST    /conductr/events            controllers.Application.update(project: Project.Value = Project.ConductR)
-
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET         /$path<.*>           controllers.Application.render(path)
+POST        /*path/events        controllers.Application.update(path)

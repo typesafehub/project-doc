@@ -24,7 +24,6 @@ libraryDependencies ++= Seq(
 // Play
 
 routesGenerator := InjectedRoutesGenerator
-routesImport += "controllers.Application.Project"
 
 // sbt-web
 
