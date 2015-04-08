@@ -100,7 +100,7 @@ class Application @Inject() (
     }
   }
 
-  def update(path: String) = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
+  def update() = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
     request.headers.get(HOST) match {
       case Some(host) =>
         getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
