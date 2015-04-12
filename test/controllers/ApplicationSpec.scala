@@ -13,11 +13,7 @@ import scala.concurrent.duration._
 class ApplicationSpec  extends WordSpecLike with Matchers {
   "MacBodyParser" should {
     "produce a unit when the body digest matches the signature" in {
-      val mac = Mac.getInstance(algorithm)
-      mac.init(secret)
-      val signature = mac.doFinal(body.getBytes("UTF-8"))
-
-      val request = FakeRequest("GET", "/").withHeaders(hmacHeader -> bytes2hex(signature))
+      val request = FakeRequest("GET", "/").withHeaders(hmacHeader -> s"sha1=$hmacHexDigest")
       val bodyParser = Application.MacBodyParser(hmacHeader, secret, algorithm)
 
       val result = Enumerator(body.getBytes("UTF-8")) |>>> bodyParser(request)
@@ -39,6 +35,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers {
   val secret = new SecretKeySpec("somesecret".getBytes, algorithm)
 
   val hmacHeader = "X-Hub-Signature"
+  val hmacHexDigest = "1f30c9572859472be574afa5dcc641d3184894bb"
 
   val body = "some body"
 
