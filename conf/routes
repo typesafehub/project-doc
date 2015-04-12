@@ -2,4 +2,4 @@
 GET         /assets/*file        controllers.Assets.at(path="/public", file)
 
 GET         /$path<.*>           controllers.Application.render(path)
-POST        /*path/events        controllers.Application.update(path)
+POST        /events              controllers.Application.update()

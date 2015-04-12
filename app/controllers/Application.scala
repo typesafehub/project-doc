@@ -33,7 +33,8 @@ object Application {
       hex.replaceAll("[^0-9A-Fa-f]", "").sliding(2, 2).toArray.map(Integer.parseInt(_, 16).toByte)
 
     override def apply(request: RequestHeader): Iteratee[Array[Byte], Either[Result, Unit]] = {
-      val signature = hex2bytes(request.headers.get(hmacHeader).getOrElse(""))
+      val hexSignature = request.headers.get(hmacHeader).map(_.dropWhile(_ != '=').drop(1)).getOrElse("")
+      val signature = hex2bytes(hexSignature)
       Iteratee.fold[Array[Byte], Mac] {
         val mac = Mac.getInstance(algorithm)
         mac.init(secret)
@@ -42,9 +43,9 @@ object Application {
         mac.update(bytes)
         mac
       }.map {
-        case mac if signature.isEmpty                     => Left(Results.BadRequest(s"No $hmacHeader header present"))
+        case _   if signature.isEmpty                     => Left(Results.BadRequest(s"No $hmacHeader header present"))
         case mac if mac.doFinal().sameElements(signature) => Right(())
-        case mac                                          => Left(Results.Unauthorized("Bad signature"))
+        case _                                            => Left(Results.Unauthorized("Bad signature"))
       }
     }
   }
@@ -100,7 +101,7 @@ class Application @Inject() (
     }
   }
 
-  def update(path: String) = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
+  def update() = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
     request.headers.get(HOST) match {
       case Some(host) =>
         getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
