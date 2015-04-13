@@ -23,4 +23,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 addSbtPlugin("default" % "sbt-sass" % "0.1.9")
 
 // conductR
-addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.27.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "0.28.0")
