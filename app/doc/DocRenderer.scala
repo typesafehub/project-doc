@@ -5,6 +5,9 @@ import java.net.URI
 import java.nio.file.{Path, Files}
 
 import akka.actor.{ActorLogging, Actor, Props}
+import akka.cluster.Cluster
+import akka.contrib.datareplication.{GCounter, DataReplication}
+import akka.contrib.datareplication.Replicator.{Changed, Update, WriteLocal, Subscribe}
 import akka.pattern.pipe
 import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.io.{FileUtils, IOUtils}
@@ -42,12 +45,19 @@ object DocRenderer {
    * documentation source having been updated.
    */
   case object GetSite
-  
+
+  /**
+   * Similar to GetSite, but the GetSite will be coordinated across all instances of this actor within
+   * the cluster.
+   */
+  case object PropogateGetSite
+
   private[doc] sealed trait Entry
   private[doc] case class Folder(name: String, documents: immutable.Seq[Entry]) extends Entry
   private[doc] case class Document(name: String, ref: URI) extends Entry
 
   final private val HtmlExt = "html"
+  final private val SiteUpdateCounter = "SiteUpdateCounter"
   final private val TocFilename = "index.toc"
 
   def props(
@@ -153,8 +163,13 @@ class DocRenderer(
   import DocRenderer._
   import context.dispatcher
 
-  override def preStart(): Unit =
+  val replicator = DataReplication(context.system).replicator
+  implicit val cluster = Cluster(context.system)
+
+  override def preStart(): Unit = {
+    replicator ! Subscribe(SiteUpdateCounter, self)
     self ! GetSite
+  }
   
   override def receive: Receive =
     handleSiteRetrieval.orElse(handleUnready)
@@ -177,6 +192,13 @@ class DocRenderer(
       val mdRenderer = new PlayDoc(repo, repo, "resources", version)
 
       context.become(handleSiteRetrieval.orElse(handleRendering(docSources, mdRenderer, toc, LruCache[Html]())))
+
+    case PropogateGetSite =>
+      log.info(s"Notifying cluster of change for $docArchive")
+      replicator ! Update(SiteUpdateCounter, GCounter(), WriteLocal)(_ + 1)
+
+    case Changed(SiteUpdateCounter, _: GCounter) =>
+      self ! GetSite
   }
   
   private def handleUnready: Receive = {

@@ -3,12 +3,11 @@ package controllers
 import java.io.File
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.inject.Inject
+import javax.inject.{Named, Inject}
 
 import akka.actor.ActorRef
 import akka.pattern.{AskTimeoutException, ask}
 import doc.DocRenderer
-import modules.ConductRModule.ConductRDocRendererProvider
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.Iteratee
 import play.api.mvc._
@@ -65,7 +64,7 @@ object Application {
 }
 
 class Application @Inject() (
-  conductrDocRendererProvider: ConductRDocRendererProvider,
+  @Named("ConductRDocRenderer") conductrDocRenderer: ActorRef,
   settings: Settings) extends Controller {
 
   import Application._
@@ -73,7 +72,7 @@ class Application @Inject() (
   private final val MacAlgorithm = "HmacSHA1"
   private final val GitHubSignature = "X-Hub-Signature"
 
-  private val docRenderers = Map("conductr" -> conductrDocRendererProvider.get)
+  private val docRenderers = Map("conductr" -> conductrDocRenderer)
 
   private val secret = new SecretKeySpec(settings.play.crypto.secret.getBytes, MacAlgorithm)
 
@@ -106,7 +105,7 @@ class Application @Inject() (
       case Some(host) =>
         getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
           case Some(docRenderer) =>
-            docRenderer ! DocRenderer.GetSite
+            docRenderer ! DocRenderer.PropogateGetSite
             Ok("Site update requested")
           case None =>
             NotFound(s"Unknown project: $host")
