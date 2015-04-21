@@ -50,7 +50,7 @@ BundleKeys.memory := 64.MiB
 BundleKeys.diskSpace := 50.MiB
 BundleKeys.roles := Set("web-doc")
 
-BundleKeys.system := "doc-renderer-cluster-1.0"
+BundleKeys.system := "doc-renderer-cluster-1"
 
 BundleKeys.endpoints := Map(
   "akka-remote" -> Endpoint("tcp"),
