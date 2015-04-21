@@ -6,12 +6,15 @@ import javax.inject.{Provider, Inject, Singleton}
 
 import akka.actor.{ActorRef, ActorSystem}
 import doc.DocRenderer
+import play.api.{Configuration, Environment}
+import play.api.inject.Module
 import play.api.libs.ws.WSClient
 
 object ConductRModule {
 
   @Singleton
-  class ConductRDocRendererProvider @Inject()(actorSystem: ActorSystem, wsClient: WSClient) extends Provider[ActorRef] {
+  class ConductRDocRendererProvider @Inject()(actorSystem: ActorSystem, wsClient: WSClient)
+    extends Provider[ActorRef] {
 
     private val renderer =
       actorSystem.actorOf(DocRenderer.props(
@@ -22,6 +25,14 @@ object ConductRModule {
         wsClient), "conductr-doc-renderer")
 
     override def get = renderer
-
   }
+}
+
+class ConductRModule extends Module {
+  import ConductRModule._
+
+  def bindings(environment: Environment,
+               configuration: Configuration) = Seq(
+    bind[ActorRef].qualifiedWith("ConductRDocRenderer").toProvider[ConductRDocRendererProvider]
+  )
 }
