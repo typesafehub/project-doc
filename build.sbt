@@ -7,8 +7,9 @@ version := "1.0-SNAPSHOT"
 scalaVersion := "2.11.6"
 
 resolvers ++= Seq(
-  "spray repo" at "http://repo.spray.io",
-  "patriknw at bintray" at "http://dl.bintray.com/patriknw/maven"
+  "spray repo"          at "http://repo.spray.io",
+  "patriknw at bintray" at "http://dl.bintray.com/patriknw/maven",
+  "typesafe-releases"   at "http://repo.typesafe.com/typesafe/maven-releases"
 )
 
 libraryDependencies ++= Seq(
