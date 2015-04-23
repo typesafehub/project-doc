@@ -13,17 +13,17 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.github.patriknw"   %% "akka-data-replication"    % "0.11",
-  "com.typesafe.conductr" %% "akka-conductr-bundle-lib"	% "0.8.0",
-  "org.apache.commons"    %  "commons-compress" 		    % "1.8.1",
-  "commons-io"            %  "commons-io"       		    % "2.4",
-  "org.webjars"           %  "foundation"       	     	% "5.5.1",
-  "com.googlecode.kiama"  %% "kiama"            		    % "1.8.0",
-  "com.typesafe.conductr" %% "play-conductr-bundle-lib"	% "0.9.0-4158e00ea986c1b619378d5ba8bc364d34acfc0d",
-  "com.typesafe.play"     %% "play-doc"         		    % "1.1.0",
-  "io.spray"              %% "spray-caching"    		    % "1.3.3",
-  "org.scalatest"         %% "scalatest"        		    % "2.2.4" % "test",
-  "org.scalatestplus"     %% "play"             		    % "1.2.0" % "test",
+  "com.github.patriknw"   %% "akka-data-replication"      % "0.11",
+  "com.typesafe.conductr" %% "akka-conductr-bundle-lib"	  % "0.8.0",
+  "org.apache.commons"    %  "commons-compress" 		      % "1.8.1",
+  "commons-io"            %  "commons-io"       		      % "2.4",
+  "org.webjars"           %  "foundation"       	     	  % "5.5.1",
+  "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
+  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "0.10.0",
+  "com.typesafe.play"     %% "play-doc"         		      % "1.1.0",
+  "io.spray"              %% "spray-caching"    		      % "1.3.3",
+  "org.scalatest"         %% "scalatest"        		      % "2.2.4" % "test",
+  "org.scalatestplus"     %% "play"             		      % "1.2.0" % "test",
   ws
 )
 
