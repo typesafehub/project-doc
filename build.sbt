@@ -9,17 +9,17 @@ scalaVersion := "2.11.6"
 resolvers ++= Seq(
   "spray repo"          at "http://repo.spray.io",
   "patriknw at bintray" at "http://dl.bintray.com/patriknw/maven",
-  "typesafe-releases"   at "http://repo.typesafe.com/typesafe/maven-releases"
+  "typesafe-releases"   at "http://repo.typesafe.com/typesafe/maven-releases",
+  Resolver.bintrayRepo("typesafe", "maven-releases")
 )
 
 libraryDependencies ++= Seq(
   "com.github.patriknw"   %% "akka-data-replication"      % "0.11",
-  "com.typesafe.conductr" %% "akka-conductr-bundle-lib"	  % "0.8.0",
   "org.apache.commons"    %  "commons-compress" 		      % "1.8.1",
   "commons-io"            %  "commons-io"       		      % "2.4",
   "org.webjars"           %  "foundation"       	     	  % "5.5.1",
   "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
-  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "0.10.0",
+  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "0.13.0",
   "com.typesafe.play"     %% "play-doc"         		      % "1.1.0",
   "io.spray"              %% "spray-caching"    		      % "1.3.3",
   "org.scalatest"         %% "scalatest"        		      % "2.2.4" % "test",

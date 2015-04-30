@@ -10,7 +10,7 @@ import play.api.{Configuration, Environment}
 import play.api.inject.Module
 import play.api.libs.ws.WSClient
 
-object ConductRModule {
+object ConductRDocRendererModule {
 
   @Singleton
   class ConductRDocRendererProvider @Inject()(actorSystem: ActorSystem, wsClient: WSClient)
@@ -28,8 +28,8 @@ object ConductRModule {
   }
 }
 
-class ConductRModule extends Module {
-  import ConductRModule._
+class ConductRDocRendererModule extends Module {
+  import ConductRDocRendererModule._
 
   def bindings(environment: Environment,
                configuration: Configuration) = Seq(
