@@ -209,9 +209,19 @@ body
             display: block
             &:hover
                 text-decoration: none
+            &.active
+                background: $white-dkr
+                color: $navy
+                padding: 3px 3px 3px 10px
+                border-radius: $br
+                &:after
+                    content: "\203A"
+                    margin-right: 5px
+                    font-weight: 700
+                    float: right
 
 .in-page-toc
-    padding: 20px 20px 20px 40px
+    padding: 0
     background: $white
     background: linear-gradient(left,0% $white-ltr,5% $white)
     box-shadow: shadow
@@ -225,15 +235,36 @@ body
             color: $blue-text
         &.active
             color: $blue-text
+    aside > ul
+        padding-top: 14px
     ul
         margin: 0
         padding: 0
+        line-height: 2em
         > li
             list-style-type: none
             font-size: 1.4em
+            padding-left: 20px
+            a
+                display: block
+                margin-left: -20px
+                padding-left: 20px
+                border-bottom: 1px solid $white-ltr
+                transition: $anime
+                &.active
+                    border-left: 10px solid $blue
+                    border-bottom: none
+                    background: $white-dkr
+                    font-weight: 700
+                    transition: $anime
+                    color: $navy
+                &:hover
+                    background: $white-ltr
+                    text-decoration: none
+                    transition: $anime
             > ul li
                 font-size: 0.8em
-                padding-left: 1em
+                padding-left: 0
 
 #site-footer
     color: $white
@@ -245,6 +276,19 @@ body
             padding: 0
             >ul li
                 padding-left: 1em
+        a.active
+            background: $white-dkr
+            display: inline-block
+            padding: 2px 15px 2px 6px
+            color: $navy
+            border-radius: $br
+            &:hover
+                text-decoration: none
+            &:before
+                content: "\203A"
+                margin-right: 5px
+                font-weight: 700
+
     .logo-copyright
         height: 30px
         line-height: 28px
@@ -256,3 +300,23 @@ body
 
 .off-canvas-wrap.move-right, .move-right > .inner-wrap
     height: 100%
+
+.btn
+    display: inline-block
+    background: $blue
+    padding: 0.3em 0.8em
+    color: $white !important
+    border-radius: $br
+    border-bottom: 2px solid $blue-text
+    transition: $anime
+    &:hover
+        background: $blue-dkr
+        transition: $anime
+        text-decoration: none
+
+.next-prev-nav
+    background: $white-dkr
+    padding: 2em
+    border-radius: $br
+    p
+        margin: 0
