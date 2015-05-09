@@ -21,7 +21,7 @@
             <div class="inner-wrap">
                 <!-- Off Canvas Menu -->
                 <div class="left-off-canvas-menu">
-                    <div class="canvas-menu-wrap">
+                    <div class="canvas-menu-wrap toc-wrapper">
                         @toc
                         @mainNav(false)
                     </div>
@@ -48,11 +48,23 @@
                         </div>
                     </div>
                 </div>
+
                 @content
+
+                <div class="fw-wrapper white-ltr flush-top">
+                    <div class="row">
+                        <div class="small-12 medium-7 large-8 columns">
+                            <div id="next-prev-nav" class="next-prev-nav">
+                                <p>NEXT: <a href="" id="nextLink" class=""></a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <footer id="site-footer" class="fw-wrapper">
                     <div class="row">
-                        <div class="small-12 medium-8 columns footer-toc">
-                            @toc
+                        <div class="small-12 medium-8 columns footer-toc toc-wrapper">
+                            <span id="footerTOC" >@toc</span>
                             @mainNav(false)
                         </div>
                         <div class="small-12 medium-4 columns text-right logo-copyright">
@@ -69,6 +81,28 @@
     <script src="@routes.Assets.at("lib/fastclick/fastclick.js")"></script>
     <script src="@routes.Assets.at("lib/foundation/js/foundation.min.js")"></script>
     <script>
-        $(document).foundation();
+        jQuery.noConflict();
+            (function($) {
+              $(function() {
+                //init foundation
+                $(document).foundation();
+                //add active states to menus
+                var p = location.pathname;
+                $('.toc-wrapper a[href="' + location.pathname + '"]').addClass('active');
+                //next links - capture toc/URLs for links
+                var elements = $('#footerTOC a'),
+                    elength = elements.length,
+                    current = elements.filter('.active'),
+                    index = elements.index(current),
+                    next = index + 1;
+                //hide for last page, build out next link otherwise
+                if(next == elength){
+                    next = 0;
+                    $('#next-prev-nav').hide();
+                } else {
+                    $('#nextLink').attr('href', $(elements[next]).attr('href')).html($(elements[next]).text());
+                };
+              });
+        })(jQuery);
     </script>
 </html>
