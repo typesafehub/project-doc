@@ -55,6 +55,10 @@ body
         box-shadow: inset 0 -3px 0 rgba(black,.1)
         h1,h2,h3,h4,p,a
             color: $white
+    &.navy-ltr
+        background-color: $navy-ltr
+        h1,h2,h3,h4,p,a
+            color: $white
     &.shadow
         box-shadow: inset 0 -3px 0 rgba(black,.1)
     &.shadow-dark
@@ -268,6 +272,19 @@ body
 
 #site-footer
     color: $white
+    .footer-toc aside > ul > li
+        border-top: 1px solid $white-dkr
+        padding-top: 4px
+        margin: 0 0 10px 0
+        float: left
+        width: 100%
+        text-transform: uppercase
+        @media only screen and (min-width: $medium)
+            width: 29%
+            margin-right: 2%
+        > a
+            color: white
+
     .footer-toc ul
         margin: 0
         padding: 0
@@ -275,7 +292,8 @@ body
             list-style-type: none
             padding: 0
             >ul li
-                padding-left: 1em
+                padding-left: 0
+                text-transform: none
         a.active
             background: $white-dkr
             display: inline-block
@@ -294,9 +312,13 @@ body
         line-height: 28px
         vertical-align: top
         font-weight: 700
+        margin-top: 20px
         .svg-icon
             width: 100px
             height: 30px
+        @media only screen and (min-width: $medium)
+            text-align: right
+            margin-top: 0
 
 .off-canvas-wrap.move-right, .move-right > .inner-wrap
     height: 100%
@@ -320,3 +342,37 @@ body
     border-radius: $br
     p
         margin: 0
+
+.support-item
+    display: inline-block
+    margin: 40px 60px 40px 0
+
+.support-icon
+    display: inline-block
+    margin-right: 10px
+
+
+
+.support-icon .svg-icon
+    width: 50px
+    height: 50px
+
+.support-detail
+    display: inline-block
+    min-height: 50px
+    vertical-align: top
+    text-align: left
+
+.support-detail h2
+    color: #ffffff
+    font-size: 18px
+    text-transform: uppercase
+    margin: 6px 0 0 0
+
+.support-detail a
+    color: #c2d2dc
+    margin-right: 6px
+
+body .support-detail a:hover
+    color: #ffffff
+    text-decoration: underline
