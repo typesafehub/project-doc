@@ -103,7 +103,8 @@
                 $(document).foundation();
                 //add active states to menus
                 var p = location.pathname;
-                $('.toc-wrapper a[href="' + location.pathname + '"]').addClass('active');
+                if (p == '/') p = '/Home.html'
+                $('.toc-wrapper a[href="' + p + '"]').addClass('active');
                 //next links - capture toc/URLs for links
                 var elements = $('#footerTOC a'),
                     elength = elements.length,
