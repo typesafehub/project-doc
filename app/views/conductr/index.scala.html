@@ -10,6 +10,8 @@
 
                 <p>ConductR moves beyond simply running multiple instances of the services that are your applications. With ConductR, we deploy applications, in the form of archives of components together with their configuration metadata, to the cluster. ConductR is a deployment target for the next generation of applications as we continue the progression up the infrastructure stack from bare hardware, to virtual machines, to IaaS and now clusters.</p>
 
+                <p>For teams using tools like Chef, Puppet, Ansible and Terraform, ConductR simplifies the task of clustering Reactive Platform applications. Without ConductR, the provisioning and configuration playbooks also install and configure applications as part of provisioning cluster nodes. With ConductR, this layer now only needs to install and configure ConductR. The configuration and management of the applications running of the cluster is treated as the separate concern that it is.</p>
+
                 <p>ConductR’s design was influenced by Mesos by adopting its notion of resource requests and offers, and support for Docker containers for example. ConductR runs stand-alone and is also planned to be available as a Mesos framework later this year. ConductR is also a refreshing alternative to using Apache ZooKeeper for service discovery in your applications and services.</p>
 
                 <img src="@routes.Assets.at("images/svg/conductR-and-reactive-system-architecture.svg")">
