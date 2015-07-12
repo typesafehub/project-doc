@@ -19,31 +19,27 @@ libraryDependencies ++= Seq(
   "commons-io"            %  "commons-io"       		      % "2.4",
   "org.webjars"           %  "foundation"       	     	  % "5.5.1",
   "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
-  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "0.13.0",
+  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "1.0.0",
   "com.typesafe.play"     %% "play-doc"         		      % "1.1.0",
   "io.spray"              %% "spray-caching"    		      % "1.3.3",
   "org.scalatest"         %% "scalatest"        		      % "2.2.4" % "test",
-  "org.scalatestplus"     %% "play"             		      % "1.2.0" % "test",
+  "org.scalatestplus"     %% "play"             		      % "1.4.0-M3" % "test",
   ws
 )
 
 // Play
-
 routesGenerator := InjectedRoutesGenerator
 
 // sbt-web
-
 JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 sassOptions in Assets ++= Seq("--compass", "-r", "compass")
 StylusKeys.useNib in Assets := true
 StylusKeys.compress in Assets := false
 
 // Project/module declarations
-
 lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging, PlayScala, ConductRPlugin)
 
 // ConductR
-
 import ByteConversions._
 
 BundleKeys.nrOfCpus := 1.0
