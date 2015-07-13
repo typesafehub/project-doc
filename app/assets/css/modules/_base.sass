@@ -2,7 +2,7 @@
 body
     background: $navy
     padding: 0
-    margin: 0
+    margin: 0    
 
 .fw-wrapper
     padding: 60px 0px
@@ -30,6 +30,8 @@ body
         background-color: $slate-tt
         h1,h2,h3,h4,p,a
             color: $white
+    &.white
+        background-color: $white
     &.white-ltr
         background-color: $white-ltr
     &.white-dkr
@@ -76,7 +78,7 @@ body
     &.scala
         background-color: $scala-red
         h1,h2,h3,h4,p,a
-            color: $white
+            color: $white            
 
 #site-header
     background: $white
@@ -125,7 +127,7 @@ body
                     height: 70px
                     line-height: 70px
                     padding: 0 30px
-                    color: navy
+                    color: slate-text
                     border-left: 1px solid $white-dkr
                     font-weight: bold
                     font-stretch: condensed
@@ -134,14 +136,14 @@ body
                     transition: all 150ms ease-in-out
                     text-transform: uppercase
                     &:link, &:visited
-                        color: $navy
+                        color: $slate-text
                     &:hover
                         background: rgba(#f0f3f6,0.2)
-                        box-shadow: inset 0 4px 0 $navy,inset 0 0 1px $grey-ltr
+                        box-shadow: inset 0 4px 0 $slate-text,inset 0 0 1px $grey-ltr
                         transition: all 150ms ease-in-out
                         text-decoration: none
                     &:active
-                        color: $navy
+                        color: $slate-text
                 .svg-icon-typesafe-full-color
                     width: 100px
                     height: 40px
@@ -163,7 +165,7 @@ body
         font-style: italic
 
 .page-content
-    background: $white-ltr
+    background: $white
     min-height: 600px
 
 .left-off-canvas-menu
@@ -205,7 +207,7 @@ body
                 text-decoration: none
             &.active
                 background: $white-dkr
-                color: $navy
+                color: $slate-text
                 padding: 3px 3px 3px 10px
                 border-radius: $br
                 &:after
@@ -223,7 +225,7 @@ body
     border: 1px solid $white-dkr
     border-bottom: 3px solid $white-dkr
     h3, h3 a
-        color: $navy
+        color: $slate-text
         &:hover
             text-decoration: none
             color: $blue-text
@@ -248,32 +250,32 @@ body
                 &.active
                     border-left: 10px solid $blue
                     border-bottom: none
-                    background: $white-dkr
+                    background: $white-ltr
                     font-weight: 700
                     transition: $anime
-                    color: $navy
+                    color: $slate-text
                 &:hover
                     background: $white-ltr
                     text-decoration: none
                     transition: $anime
             > ul li
-                font-size: 0.8em
+                font-size: 0.9em
                 padding-left: 0
 
 #site-footer
     color: $white
-    .footer-toc aside > ul > li
-        border-top: 1px solid $white-dkr
-        padding-top: 4px
-        margin: 0 0 10px 0
-        float: left
-        width: 100%
+    .footer-toc a:hover
+        text-decoration: none
+        color: $blue-text
+    .footer-toc h2
+        font-size: 1em
+        font-weight: 700
         text-transform: uppercase
-        @media only screen and (min-width: $medium)
-            width: 29%
-            margin-right: 2%
+        margin-bottom: .2rem
         > a
-            color: white
+            color: $red
+    .footer-toc ul > li > a
+        color: $white
 
     .footer-toc ul
         margin: 0
@@ -284,18 +286,6 @@ body
             >ul li
                 padding-left: 0
                 text-transform: none
-        a.active
-            background: $white-dkr
-            display: inline-block
-            padding: 2px 15px 2px 6px
-            color: $navy
-            border-radius: $br
-            &:hover
-                text-decoration: none
-            &:before
-                content: "\203A"
-                margin-right: 5px
-                font-weight: 700
 
     .logo-copyright
         height: 30px
@@ -327,7 +317,7 @@ body
         text-decoration: none
 
 .next-prev-nav
-    background: $white-dkr
+    background: $white-ltr
     padding: 2em
     border-radius: $br
     p
@@ -364,5 +354,5 @@ body
     margin-right: 6px
 
 body .support-detail a:hover
-    color: #ffffff
-    text-decoration: underline
+    color: $blue
+    text-decoration: none
