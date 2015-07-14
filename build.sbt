@@ -18,6 +18,7 @@ libraryDependencies ++= Seq(
   "org.apache.commons"    %  "commons-compress" 		      % "1.8.1",
   "commons-io"            %  "commons-io"       		      % "2.4",
   "org.webjars"           %  "foundation"       	     	  % "5.5.1",
+  "org.webjars"           %  "prettify"                   % "4-Mar-2013",
   "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
   "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "1.0.0",
   "com.typesafe.play"     %% "play-doc"         		      % "1.2.3",

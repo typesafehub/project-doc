@@ -9,6 +9,7 @@ body
     color: $slate-text
     font-smoothing: antialiased
     -webkit-font-smoothing: antialiased
+    -moz-osx-font-smoothing: grayscale
     -webkit-font-size-adjust: none
     text-rendering: optimizeLegibility
 h1
@@ -102,17 +103,18 @@ h1 a, h2 a
         color: $slate-text
 
 pre
-    padding: 0.5rem 1rem
-    border: 1px solid $grey-code-dkr
-    -webkit-border-radius: 5px
-    border-radius: 5px
-    background: $grey-code
-    margin: 0 0 1rem 0
+    padding: 0.5rem 1rem !important
+    border: 1px solid $grey-code-dkr !important
+    -webkit-border-radius: 5px !important
+    border-radius: 5px !important
+    background: $grey-code !important
+    margin: 0 0 1rem 0 !important
 
 code
-    line-height: 1.45em    
-    font-family: "Source Code Pro", Consolas, "Liberation Mono", Courier, monospace
-    font-size: 0.85em    
+    line-height: 1.45em  !important
+    font-family: "Source Code Pro", Consolas, "Liberation Mono", Courier, monospace  !important
+    font-size: 0.85em !important
+    padding: 0 !important
 
 pre > code
     background: none
