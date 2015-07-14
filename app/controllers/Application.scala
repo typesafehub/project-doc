@@ -76,7 +76,11 @@ class Application @Inject() (
 
   private val secret = new SecretKeySpec(settings.play.crypto.secret.getBytes, MacAlgorithm)
 
-  def render(path: String) = Action.async { request =>
+  def renderIndex = Action {
+    Ok(views.html.conductr.index())
+  }
+
+  def renderDocs(path: String) = Action.async { request =>
     request.headers.get(HOST) match {
       case Some(host) =>
         getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
@@ -86,6 +90,7 @@ class Application @Inject() (
               .map {
               case html: Html               => Ok(html)
               case resource: File           => Ok.sendFile(resource)
+              case DocRenderer.Redirect(rp) => Redirect(routes.Application.renderDocs(rp))
               case DocRenderer.NotFound(rp) => NotFound(s"Cannot find $rp")
               case DocRenderer.NotReady     => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
             }

@@ -1,15 +1,55 @@
 @(b: Html, toc: Html)
 
-@main("ConductR - A Reactive Application Manager for Operations", toc) {
+@scripts = {
+    <script>
+        jQuery.noConflict();
+            (function($) {
+              $(function() {
+                //add active states to menus
+                var p = location.pathname;
+                $('.toc-wrapper a[href="' + p + '"]').addClass('active');
+                //next links - capture toc/URLs for links
+                var elements = $('.toc-wrapper a'),
+                    elength = elements.length,
+                    current = elements.filter('.active'),
+                    index = elements.index(current),
+                    next = index + 1;
+                //hide for last page, build out next link otherwise
+                if(next == elength){
+                    next = 0;
+                    $('#next-prev-nav').hide();
+                } else {
+                    $('#nextLink').attr('href', $(elements[next]).attr('href')).html($(elements[next]).text());
+                };
+              });
+        })(jQuery);
+
+
+    </script>
+}
+
+@main("ConductR - A Reactive Application Manager for Operations", additionalScripts = Some(scripts)) {
 
     <div class="fw-wrapper page-content">
         <div class="row">
-            <div class="small-12 medium-7 large-8 columns">
+            <div class="small-12 medium-8 large-9 columns">
                 @b
             </div>
-            <div class="medium-5 large-4 hide-for-small-only columns">
+            <div class="medium-4 large-3 hide-for-small-only columns">
                 <div id="inPageTOC" class="in-page-toc toc-wrapper">
                     @toc
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fw-wrapper white flush-top">
+        <div class="row">
+            <div class="small-12 medium-8 large-9 columns">
+                <div id="next-prev-nav" class="next-prev-nav">
+                    <p>
+                        <strong>Next:</strong>
+                        <a href="" id="nextLink" class=""></a></p>
                 </div>
             </div>
         </div>

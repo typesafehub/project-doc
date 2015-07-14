@@ -21,6 +21,7 @@ object ConductRDocRendererModule {
         new URI("https://github.com/typesafehub/conductr-doc/archive/master.zip"),
         removeRootSegment = true,
         Paths.get("src/main/play-doc"),
+        controllers.routes.Application.renderDocs("").url,
         "1.0.x",
         wsClient), "conductr-doc-renderer")
 

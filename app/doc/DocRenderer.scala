@@ -16,7 +16,7 @@ import play.api.libs.ws.{WSResponseHeaders, WSClient}
 import play.doc.{PlayDoc, FilesystemRepository}
 import play.twirl.api.Html
 import spray.caching.{Cache, LruCache}
-import views.html.conductr.{body, index}
+import views.html.conductr.body
 
 import scala.collection.immutable
 import scala.collection.JavaConverters._
@@ -28,6 +28,11 @@ object DocRenderer {
    * Render a path. Either returns the rendered Html object or NotFound/NotReady
    */
   case class Render(path: String)
+
+  /**
+   * Redirect to a relative documentation path
+   */
+  case class Redirect(path: String)
 
   /**
    * Path is not found
@@ -56,17 +61,18 @@ object DocRenderer {
   private[doc] case class Folder(name: String, documents: immutable.Seq[Entry]) extends Entry
   private[doc] case class Document(name: String, ref: URI) extends Entry
 
-  final private val HtmlExt = "html"
   final private val SiteUpdateCounter = "SiteUpdateCounter"
+  final private val IndexPath = "intro/Intro"
   final private val TocFilename = "index.toc"
 
   def props(
     docArchive: URI,
     removeRootSegment: Boolean,
     docRoot: Path,
+    docUri: String,
     version: String,
     wsClient: WSClient): Props =
-    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, version, wsClient))
+    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, docUri, version, wsClient))
   
   private[doc] def unzip(input: Enumerator[Array[Byte]], removeRootSegment: Boolean)(implicit ec: ExecutionContext): Future[Path] = {
     val archive = Files.createTempFile(null, null)
@@ -111,10 +117,10 @@ object DocRenderer {
     }
   }
 
-  private[doc] def aggregateToc(docDir: Path): Html = {
+  private[doc] def aggregateToc(docDir: Path, docUri: String): Html = {
     import HtmlPrettyPrinter._
 
-    val folder = createEntries(docDir, new URI(""), Folder("", List.empty))
+    val folder = createEntries(docDir, new URI(docUri), Folder("", List.empty))
 
     def toDoc(documents: immutable.Seq[Entry]): Doc =
       ul(documents.map {
@@ -139,14 +145,14 @@ object DocRenderer {
         val subTargetUri = new URI(s"$targetUri/$filename")
         createEntries(subDocDir, subTargetUri, Folder(name, List.empty))
       } else {
-        Document(name, new URI(s"$targetUri/$filename.$HtmlExt"))
+        Document(name, new URI(s"$targetUri/$filename"))
       }
     }
     folder.copy(documents = folder.documents ++ newDocuments)
   }
 
   private def getName(path: String): String =
-    path.drop(1).reverse.dropWhile(_ != '.').drop(1).takeWhile(_ != '/').reverse.dropWhile(_ == '/')
+    path.drop(1).reverse.takeWhile(_ != '/').reverse.dropWhile(_ == '/')
 }
 
 /**
@@ -157,6 +163,7 @@ class DocRenderer(
   docArchive: URI,
   removeRootSegment: Boolean,
   docRoot: Path,
+  docUri: String,
   version: String,
   wsClient: WSClient) extends Actor with ActorLogging {
 
@@ -186,7 +193,7 @@ class DocRenderer(
       log.info(s"Doc retrieved for $docArchive")
 
       val docSources = docDir.resolve(docRoot)
-      val toc = aggregateToc(docSources)
+      val toc = aggregateToc(docSources, docUri)
 
       val repo = new FilesystemRepository(docSources.toFile)
       val mdRenderer = new PlayDoc(repo, repo, "resources", version)
@@ -206,12 +213,10 @@ class DocRenderer(
   }
 
   private def handleRendering(docSources: Path, mdRenderer: PlayDoc, toc: Html, cache: Cache[Html]): Receive = {
-    case Render(path) if path.isEmpty || path == "/" || path == s"Home.$HtmlExt" =>
-      cache("/") {
-        index(toc)
-      }.pipeTo(sender())
+    case Render(path) if path.isEmpty =>
+        sender() ! Redirect(IndexPath)
 
-    case Render(path) if path.endsWith(HtmlExt)=>
+    case Render(path) if !path.contains(".")=>
       cache(path) {
         val mdFilename = getName(path)
         mdRenderer.renderPage(mdFilename) match {
