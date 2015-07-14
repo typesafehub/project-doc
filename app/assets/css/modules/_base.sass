@@ -85,10 +85,8 @@ body
     margin: 0px 0 5px 0
     height: 75px
     border-top: 5px solid $navy
-    position: fixed
     display: block
     width: 100%
-    z-index: 9999
     box-shadow: 0 0 8px rgba(black,.5)
     &.fw-wrapper
         padding: 0
@@ -153,8 +151,8 @@ body
         float: left
 
 .page-title
-    min-height: 140px
-    padding: 100px 0 20px 0
+    height: 65px
+    padding: 25px 0 20px 0
     background: transparent url(../images/conductr-bg-strip.png) repeat-x bottom left
     h3
         color: $white
@@ -355,4 +353,18 @@ body
 
 body .support-detail a:hover
     color: $blue
+    text-decoration: none
+
+.section-marker
+    position: absolute
+    width: 1em
+    margin-left: -1em
+    display: block
+    text-decoration: none
+    visibility: hidden
+    text-align: center
+    font-weight: normal
+h1:hover > a, h2:hover > a, h3:hover > a, h4:hover > a, h5:hover > a
+    visibility: visible
+    color: inherit
     text-decoration: none

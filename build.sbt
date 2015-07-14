@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "org.webjars"           %  "foundation"       	     	  % "5.5.1",
   "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
   "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "1.0.0",
-  "com.typesafe.play"     %% "play-doc"         		      % "1.1.0",
+  "com.typesafe.play"     %% "play-doc"         		      % "1.2.3",
   "io.spray"              %% "spray-caching"    		      % "1.3.3",
   "org.scalatest"         %% "scalatest"        		      % "2.2.4" % "test",
   "org.scalatestplus"     %% "play"             		      % "1.4.0-M3" % "test",
