@@ -22,7 +22,7 @@ class DocRendererSpec extends WordSpecLike with Matchers {
 
     "Form html from the toc files of the zipped stream" in {
       val docDir = new File(getClass.getClassLoader.getResource("conductr-doc").toURI).toPath
-      val html = DocRenderer.aggregateToc(docDir.resolve("src/main/play-doc"))
+      val html = DocRenderer.aggregateToc(docDir.resolve("src/main/play-doc"), "/docs")
       html.toString() shouldBe
         """<aside>
           |    <ul>

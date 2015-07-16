@@ -214,7 +214,7 @@ body
                     font-weight: 700
                     float: right
 
-.in-page-toc
+#sidebar
     padding: 0
     background: $white
     background: linear-gradient(left,0% $white-ltr,5% $white)
@@ -222,43 +222,52 @@ body
     border-radius: $br
     border: 1px solid $white-dkr
     border-bottom: 3px solid $white-dkr
-    h3, h3 a
-        color: $slate-text
-        &:hover
-            text-decoration: none
-            color: $blue-text
-        &.active
-            color: $blue-text
-    aside > ul
-        padding-top: 14px
-    ul
-        margin: 0
-        padding: 0
-        line-height: 2em
-        > li
-            list-style-type: none
-            font-size: 1.4em
-            padding-left: 20px
-            a
-                display: block
-                margin-left: -20px
+    #toolbar
+        padding: 1em 20px .5em
+        margin-bottom: 1em
+        border-bottom: 1px solid $white-ltr
+        h3
+            display: inline-block
+            font-weight: 500
+        .versionNumber
+            float: right
+    #toc
+        h3, h3 a
+            color: $slate-text
+            &:hover
+                text-decoration: none
+                color: $blue-text
+            &.active
+                color: $blue-text
+        ul
+            padding-top: 14px
+            margin: 0
+            padding: 0
+            line-height: 2em
+            > li
+                list-style-type: none
+                font-size: 1.4em
                 padding-left: 20px
-                border-bottom: 1px solid $white-ltr
-                transition: $anime
-                &.active
-                    border-left: 10px solid $blue
-                    border-bottom: none
-                    background: $white-ltr
-                    font-weight: 700
+                a
+                    display: block
+                    margin-left: -20px
+                    padding-left: 20px
+                    border-bottom: 1px solid $white-ltr
                     transition: $anime
-                    color: $slate-text
-                &:hover
-                    background: $white-ltr
-                    text-decoration: none
-                    transition: $anime
-            > ul li
-                font-size: 0.9em
-                padding-left: 0
+                    &.active
+                        border-left: 10px solid $blue
+                        border-bottom: none
+                        background: $white-ltr
+                        font-weight: 700
+                        transition: $anime
+                        color: $slate-text
+                    &:hover
+                        background: $white-ltr
+                        text-decoration: none
+                        transition: $anime
+                > ul li
+                    font-size: 0.9em
+                    padding-left: 0
 
 #site-footer
     color: $white

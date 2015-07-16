@@ -1,9 +1,8 @@
 package doc
 
-import java.io.{FileNotFoundException, File, FileOutputStream}
+import java.io.{InputStream, FileNotFoundException, File, FileOutputStream}
 import java.net.URI
-import java.nio.file.{Path, Files}
-
+import java.nio.file.{Paths, Path, Files}
 import akka.actor.{ActorLogging, Actor, Props}
 import akka.cluster.Cluster
 import akka.contrib.datareplication.{GCounter, DataReplication}
@@ -13,11 +12,10 @@ import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.io.{FileUtils, IOUtils}
 import play.api.libs.iteratee.{Enumerator, Iteratee}
 import play.api.libs.ws.{WSResponseHeaders, WSClient}
-import play.doc.{PlayDoc, FilesystemRepository}
+import play.doc.{PageIndex, PlayDoc, FilesystemRepository}
 import play.twirl.api.Html
 import spray.caching.{Cache, LruCache}
 import views.html.conductr.body
-
 import scala.collection.immutable
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future, blocking, ExecutionContext}
@@ -57,13 +55,16 @@ object DocRenderer {
    */
   case object PropogateGetSite
 
+  case class Resource(content: Enumerator[Array[Byte]], size: Long)
+
   private[doc] sealed trait Entry
   private[doc] case class Folder(name: String, documents: immutable.Seq[Entry]) extends Entry
   private[doc] case class Document(name: String, ref: URI) extends Entry
 
   final private val SiteUpdateCounter = "SiteUpdateCounter"
-  final private val IndexPath = "intro/Intro"
+  final private val IndexPath = "Home"
   final private val TocFilename = "index.toc"
+  final private val NextText = "Next"
 
   def props(
     docArchive: URI,
@@ -100,7 +101,7 @@ object DocRenderer {
     try {
       import scala.collection.JavaConversions._
       for (entry <- zipFile.getEntries if !entry.isDirectory) {
-        val path = if (removeRootSegment)
+        val path = if(removeRootSegment)
           outputDir.resolve(entry.getName.dropWhile(_ != File.separatorChar).drop(1))
         else
           outputDir.resolve(entry.getName)
@@ -130,8 +131,15 @@ object DocRenderer {
           li(folder.name, toDoc(folder.documents))
       })
 
-    val markup = aside(toDoc(folder.documents))
+    val markup = toDoc(folder.documents)
 
+    Html(HtmlPrettyPrinter.pretty(markup))
+  }
+
+  private def aggregateToolbar(version: String): Html = {
+    import HtmlPrettyPrinter._
+
+    val markup = nav(id = Some("toolbar"), d = h3("Version") <> div(clazz = Some("versionNumber"), d = h3(version)))
     Html(HtmlPrettyPrinter.pretty(markup))
   }
 
@@ -145,14 +153,14 @@ object DocRenderer {
         val subTargetUri = new URI(s"$targetUri/$filename")
         createEntries(subDocDir, subTargetUri, Folder(name, List.empty))
       } else {
-        Document(name, new URI(s"$targetUri/$filename"))
+        Document(name, new URI(filename))
       }
     }
     folder.copy(documents = folder.documents ++ newDocuments)
   }
 
   private def getName(path: String): String =
-    path.drop(1).reverse.takeWhile(_ != '/').reverse.dropWhile(_ == '/')
+    path.reverse.takeWhile(_ != '/').reverse.dropWhile(_ == '/')
 }
 
 /**
@@ -194,11 +202,18 @@ class DocRenderer(
 
       val docSources = docDir.resolve(docRoot)
       val toc = aggregateToc(docSources, docUri)
+      val toolbar = aggregateToolbar(version)
 
       val repo = new FilesystemRepository(docSources.toFile)
-      val mdRenderer = new PlayDoc(repo, repo, "resources", version)
+      val mdRenderer = new PlayDoc(
+        markdownRepository = repo,
+        codeRepository = repo,
+        resources = "resources",
+        playVersion = version,
+        pageIndex = PageIndex.parseFrom(repo, IndexPath),
+        nextText = NextText)
 
-      context.become(handleSiteRetrieval.orElse(handleRendering(docSources, mdRenderer, toc, LruCache[Html]())))
+      context.become(handleSiteRetrieval.orElse(handleRendering(repo, mdRenderer, toc, toolbar, LruCache[Html]())))
 
     case PropogateGetSite =>
       log.info(s"Notifying cluster of change for $docArchive")
@@ -212,26 +227,25 @@ class DocRenderer(
     case _ => sender() ! NotReady
   }
 
-  private def handleRendering(docSources: Path, mdRenderer: PlayDoc, toc: Html, cache: Cache[Html]): Receive = {
-    case Render(path) if path.isEmpty =>
+  private def handleRendering(repo: FilesystemRepository, mdRenderer: PlayDoc, toc: Html, toolbar: Html, cache: Cache[Html]): Receive = {
+    case Render("") =>
         sender() ! Redirect(IndexPath)
 
-    case Render(path) if !path.contains(".")=>
+    case Render(path) if !path.contains(".") =>
       cache(path) {
-        val mdFilename = getName(path)
-        mdRenderer.renderPage(mdFilename) match {
-          case Some(renderedPage) => body(Html(renderedPage.html), toc)
-          case None               => throw new FileNotFoundException(mdFilename)
+        mdRenderer.renderPage(path) match {
+          case Some(renderedPage) => body(Html(renderedPage.html), toolbar, toc)
+          case None               => throw new FileNotFoundException(path)
         }
       }.recover {
         case _: FileNotFoundException => NotFound(path)
       }.pipeTo(sender())
 
     case Render(path) =>
-      val resource = docSources.resolve(path).toFile
-      sender() ! (if (resource.exists() && resource.getAbsolutePath.startsWith(docSources.toString))
-        resource
-      else
-        NotFound(path))
+      val resource = repo.handleFile(path) { handle =>
+        Resource(Enumerator.fromStream(handle.is).onDoneEnumerating(handle.close()), handle.size)
+      }
+
+      sender() ! resource.getOrElse(NotFound(path))
   }
 }

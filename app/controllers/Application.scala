@@ -7,9 +7,10 @@ import javax.inject.{Named, Inject}
 
 import akka.actor.ActorRef
 import akka.pattern.{AskTimeoutException, ask}
-import doc.DocRenderer
+import doc.{DocVersions, DocRenderer}
+import play.api.libs.MimeTypes
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.iteratee.Iteratee
+import play.api.libs.iteratee.{Enumerator, Iteratee}
 import play.api.mvc._
 import play.twirl.api.Html
 import settings.Settings
@@ -80,7 +81,13 @@ class Application @Inject() (
     Ok(views.html.conductr.index())
   }
 
-  def renderDocs(path: String) = Action.async { request =>
+  def renderDocsHome =
+    renderDocs("")
+
+  def renderResources(path: String, version: String) =
+    renderDocs(path)
+
+  def renderDocs(path: String, version: String = DocVersions.Latest) = Action.async { request =>
     request.headers.get(HOST) match {
       case Some(host) =>
         getDocRenderer(host, docRenderers, settings.application.hostAliases) match {
@@ -88,11 +95,11 @@ class Application @Inject() (
             docRenderer
               .ask(DocRenderer.Render(path))(settings.doc.renderer.timeout)
               .map {
-              case html: Html               => Ok(html)
-              case resource: File           => Ok.sendFile(resource)
-              case DocRenderer.Redirect(rp) => Redirect(routes.Application.renderDocs(rp))
-              case DocRenderer.NotFound(rp) => NotFound(s"Cannot find $rp")
-              case DocRenderer.NotReady     => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
+              case html: Html                     => Ok(html)
+              case resource: DocRenderer.Resource => renderResource(resource, path)
+              case DocRenderer.Redirect(rp)       => Redirect(routes.Application.renderDocs(rp, DocVersions.Latest))
+              case DocRenderer.NotFound(rp)       => NotFound(s"Cannot find $rp")
+              case DocRenderer.NotReady           => ServiceUnavailable("Initializing documentation. Please try again in a minute.")
             }
             .recover {
               case _: AskTimeoutException => InternalServerError
@@ -103,6 +110,14 @@ class Application @Inject() (
       case None =>
         Future.successful(NotFound("No host header"))
     }
+  }
+
+  private def renderResource(resource: DocRenderer.Resource, path: String): Result = {
+    val fileName = path.drop(path.lastIndexOf('/') + 1)
+    Result(ResponseHeader(OK, Map[String, String](
+      CONTENT_LENGTH -> resource.size.toString,
+      CONTENT_TYPE   -> MimeTypes.forFileName(fileName).getOrElse(BINARY)
+    )), resource.content)
   }
 
   def update() = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>

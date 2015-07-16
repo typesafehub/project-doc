@@ -1,4 +1,4 @@
-@(b: Html, toc: Html)
+@(b: Html, toolbar: Html, toc: Html)
 
 @scripts = {
     <script>
@@ -6,21 +6,9 @@
             (function($) {
               $(function() {
                 //add active states to menus
-                var p = location.pathname;
-                $('.toc-wrapper a[href="' + p + '"]').addClass('active');
-                //next links - capture toc/URLs for links
-                var elements = $('.toc-wrapper a'),
-                    elength = elements.length,
-                    current = elements.filter('.active'),
-                    index = elements.index(current),
-                    next = index + 1;
-                //hide for last page, build out next link otherwise
-                if(next == elength){
-                    next = 0;
-                    $('#next-prev-nav').hide();
-                } else {
-                    $('#nextLink').attr('href', $(elements[next]).attr('href')).html($(elements[next]).text());
-                };
+                var pathArray = location.pathname.split('/');
+                var link = pathArray[pathArray.length - 1];
+                $('#toc a[href="' + link + '"]').addClass('active');
               });
         })(jQuery);
     </script>
@@ -37,20 +25,13 @@
                 @b
             </div>
             <div class="medium-4 large-3 hide-for-small-only columns">
-                <div id="inPageTOC" class="in-page-toc toc-wrapper">
-                    @toc
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fw-wrapper white flush-top">
-        <div class="row">
-            <div class="small-12 medium-8 large-9 columns">
-                <div id="next-prev-nav" class="next-prev-nav">
-                    <p>
-                        <strong>Next:</strong>
-                        <a href="" id="nextLink" class=""></a></p>
+                <div id="sidebar">
+                    <aside>
+                        @toolbar
+                        <div id="toc">
+                            @toc
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>
