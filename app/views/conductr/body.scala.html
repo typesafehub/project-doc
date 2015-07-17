@@ -1,15 +1,37 @@
-@(b: Html, toc: Html)
+@(b: Html, toolbar: Html, toc: Html)
 
-@main("ConductR - A Reactive Application Manager for Operations", toc) {
+@scripts = {
+    <script>
+        jQuery.noConflict();
+            (function($) {
+              $(function() {
+                //add active states to menus
+                var pathArray = location.pathname.split('/');
+                var link = pathArray[pathArray.length - 1];
+                $('#toc a[href="' + link + '"]').addClass('active');
+              });
+        })(jQuery);
+    </script>
+
+    <!-- Code syntax highlighter -->
+    <script src="@routes.Assets.at("lib/prettify/run_prettify.js")"></script>
+}
+
+@main("ConductR - A Reactive Application Manager for Operations", additionalScripts = Some(scripts)) {
 
     <div class="fw-wrapper page-content">
         <div class="row">
-            <div class="small-12 medium-7 large-8 columns">
+            <div class="small-12 medium-8 large-9 columns">
                 @b
             </div>
-            <div class="medium-5 large-4 hide-for-small-only columns">
-                <div id="inPageTOC" class="in-page-toc toc-wrapper">
-                    @toc
+            <div class="medium-4 large-3 hide-for-small-only columns">
+                <div id="sidebar">
+                    <aside>
+                        @toolbar
+                        <div id="toc">
+                            @toc
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>

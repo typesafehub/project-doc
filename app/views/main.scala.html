@@ -1,4 +1,4 @@
-@(title: String, toc: Html)(content: Html)
+@(title: String, additionalScripts: Option[Html] = None)(content: Html)
 
 <!DOCTYPE html>
 <!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
@@ -22,7 +22,6 @@
                 <!-- Off Canvas Menu -->
                 <div class="left-off-canvas-menu">
                     <div class="canvas-menu-wrap toc-wrapper">
-                        @toc
                         @mainNav(false)
                     </div>
                 </div>
@@ -50,16 +49,6 @@
 
                 @content
 
-                <div class="fw-wrapper white-ltr flush-top">
-                    <div class="row">
-                        <div class="small-12 medium-7 large-8 columns">
-                            <div id="next-prev-nav" class="next-prev-nav">
-                                <p>NEXT: <a href="" id="nextLink" class=""></a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="fw-wrapper flush navy-ltr">
                     <div class="row">
                         <div class="small-12 columns">
@@ -79,8 +68,9 @@
                 </div>
                 <footer id="site-footer" class="fw-wrapper">
                     <div class="row">
-                        <div class="small-12 medium-9 columns footer-toc toc-wrapper">
-                            <span id="footerTOC" >@toc</span>
+                        <div class="small-12 medium-9 columns footer-toc">
+                            <h2><a href="@routes.Application.renderIndex()">ConductR</a></h2>
+                            @mainNav(false)
                         </div>
                         <div class="small-12 medium-3 columns logo-copyright">
                             &copy; 2015 &ndash; <a href="http://www.typesafe.com">@svg.typesafeColorReverse()</a>
@@ -101,23 +91,6 @@
               $(function() {
                 //init foundation
                 $(document).foundation();
-                //add active states to menus
-                var p = location.pathname;
-                if (p == '/') p = '/Home.html'
-                $('.toc-wrapper a[href="' + p + '"]').addClass('active');
-                //next links - capture toc/URLs for links
-                var elements = $('#footerTOC a'),
-                    elength = elements.length,
-                    current = elements.filter('.active'),
-                    index = elements.index(current),
-                    next = index + 1;
-                //hide for last page, build out next link otherwise
-                if(next == elength){
-                    next = 0;
-                    $('#next-prev-nav').hide();
-                } else {
-                    $('#nextLink').attr('href', $(elements[next]).attr('href')).html($(elements[next]).text());
-                };
               });
         })(jQuery);
 
@@ -133,4 +106,6 @@
         ga('tsTracker.send', 'pageview');
 
     </script>
+
+    @additionalScripts
 </html>

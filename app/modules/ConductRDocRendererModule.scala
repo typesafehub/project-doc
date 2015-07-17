@@ -5,7 +5,7 @@ import java.nio.file.Paths
 import javax.inject.{Provider, Inject, Singleton}
 
 import akka.actor.{ActorRef, ActorSystem}
-import doc.DocRenderer
+import doc.{DocVersions, DocRenderer}
 import play.api.{Configuration, Environment}
 import play.api.inject.Module
 import play.api.libs.ws.WSClient
@@ -21,7 +21,8 @@ object ConductRDocRendererModule {
         new URI("https://github.com/typesafehub/conductr-doc/archive/master.zip"),
         removeRootSegment = true,
         Paths.get("src/main/play-doc"),
-        "1.0.x",
+        controllers.routes.Application.renderDocsHome().url,
+        DocVersions.Latest,
         wsClient), "conductr-doc-renderer")
 
     override def get = renderer
