@@ -150,17 +150,18 @@ body
     #site-header .logo
         float: left
 
-.page-title
-    height: 65px
-    padding: 25px 0 20px 0
-    background: transparent url(../images/conductr-bg-strip.png) repeat-x bottom left
-    h3
-        color: $white
-        font-size: 1.1em
-        margin: 0
-        font-weight: 400
-        text-transform: uppercase
-        font-style: italic
+@media only screen and (min-width: $medium)
+    .page-title
+        height: 65px
+        padding: 25px 0 20px 0
+        background: transparent url(../images/conductr-bg-strip.png) repeat-x bottom left
+        h3
+            color: $white
+            font-size: 1.1em
+            margin: 0
+            font-weight: 400
+            text-transform: uppercase
+            font-style: italic
 
 .page-content
     background: $white
