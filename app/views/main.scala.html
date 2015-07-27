@@ -1,4 +1,4 @@
-@(title: String, additionalScripts: Option[Html] = None)(content: Html)
+@(title: String, toc: Option[Html] = None, additionalScripts: Option[Html] = None)(content: Html)
 
 <!DOCTYPE html>
 <!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
@@ -22,6 +22,7 @@
                 <!-- Off Canvas Menu -->
                 <div class="left-off-canvas-menu">
                     <div class="canvas-menu-wrap toc-wrapper">
+                        @toc
                         @mainNav(false)
                     </div>
                 </div>
