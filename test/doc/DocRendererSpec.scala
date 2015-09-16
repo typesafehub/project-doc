@@ -24,18 +24,16 @@ class DocRendererSpec extends WordSpecLike with Matchers {
       val docDir = new File(getClass.getClassLoader.getResource("conductr-doc").toURI).toPath
       val html = DocRenderer.aggregateToc(docDir.resolve("src/main/play-doc"), "/docs")
       html.toString() shouldBe
-        """<aside>
-          |    <ul>
-          |        <li><a href="/Home.html">Home</a></li>
-          |        <li>Introduction
-          |            <ul>
-          |                <li><a href="/intro/Intro.html">Introducing ConductR</a></li>
-          |                <li><a href="/intro/Install.html">Installation</a></li>
-          |                <li><a href="/intro/Quickstart.html">Quickstart</a></li>
-          |            </ul>
-          |        </li>
-          |    </ul>
-          |</aside>""".stripMargin
+        """<ul>
+          |    <li><a href="Home">Home</a></li>
+          |    <li>Introduction
+          |        <ul>
+          |            <li><a href="Intro">Introducing ConductR</a></li>
+          |            <li><a href="Install">Installation</a></li>
+          |            <li><a href="Quickstart">Quickstart</a></li>
+          |        </ul>
+          |    </li>
+          |</ul>""".stripMargin
     }
   }
 }

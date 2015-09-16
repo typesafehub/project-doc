@@ -11,4 +11,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 addSbtPlugin("default" % "sbt-sass" % "0.1.9")
 
 // ConductR
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.1.0")
