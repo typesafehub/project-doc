@@ -28,9 +28,9 @@ object DocRenderer {
   case class Render(path: String)
 
   /**
-   * Redirect to a relative documentation path
+   * Redirect to a relative documentation path given a known version
    */
-  case class Redirect(path: String)
+  case class Redirect(path: String, version: String)
 
   /**
    * Path is not found
@@ -68,12 +68,12 @@ object DocRenderer {
 
   def props(
     docArchive: URI,
-    removeRootSegment: Boolean,
+    removeRootSegmentOfArchive: Boolean,
     docRoot: Path,
     docUri: String,
     version: String,
     wsClient: WSClient): Props =
-    Props(new DocRenderer(docArchive, removeRootSegment, docRoot, docUri, version, wsClient))
+    Props(new DocRenderer(docArchive, removeRootSegmentOfArchive, docRoot, docUri, version, wsClient))
   
   private[doc] def unzip(input: Enumerator[Array[Byte]], removeRootSegment: Boolean)(implicit ec: ExecutionContext): Future[Path] = {
     val archive = Files.createTempFile(null, null)
@@ -182,7 +182,7 @@ class DocRenderer(
   implicit val cluster = Cluster(context.system)
 
   override def preStart(): Unit = {
-    replicator ! Subscribe(SiteUpdateCounter, self)
+    replicator ! Subscribe(siteUpdateCounter, self)
     self ! GetSite
   }
   
@@ -217,19 +217,22 @@ class DocRenderer(
 
     case PropogateGetSite =>
       log.info(s"Notifying cluster of change for $docArchive")
-      replicator ! Update(SiteUpdateCounter, GCounter(), WriteLocal)(_ + 1)
+      replicator ! Update(siteUpdateCounter, GCounter(), WriteLocal)(_ + 1)
 
-    case Changed(SiteUpdateCounter, _: GCounter) =>
+    case Changed(siteUpdateCounter, _: GCounter) =>
       self ! GetSite
   }
-  
+
+  private def siteUpdateCounter: String =
+    s"$SiteUpdateCounter/${self.path.name}/$version"
+
   private def handleUnready: Receive = {
     case _ => sender() ! NotReady
   }
 
   private def handleRendering(repo: FilesystemRepository, mdRenderer: PlayDoc, toc: Html, toolbar: Html, cache: Cache[Html]): Receive = {
     case Render("") =>
-        sender() ! Redirect(IndexPath)
+        sender() ! Redirect(IndexPath, version)
 
     case Render(path) if !path.contains(".") =>
       cache(path) {

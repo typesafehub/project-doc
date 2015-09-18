@@ -2,7 +2,8 @@
 GET         /assets/*file                                       controllers.Assets.at(path="/public", file)
 
 GET         /                                                   controllers.Application.renderIndex()
-GET         /docs                                               controllers.Application.renderDocsHome()
+GET         /docs                                               controllers.Application.renderDocsHome(version = "")
+GET         /docs/$version<\d+\.[^/]+>                          controllers.Application.renderDocsHome(version)
 GET         /docs/$version<\d+\.[^/]+>/resources/$path<.*>      controllers.Application.renderResources(path, version)
 GET         /docs/$version<\d+\.[^/]+>/$path<.*>                controllers.Application.renderDocs(path, version)
 POST        /events                                             controllers.Application.update()

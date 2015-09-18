@@ -4,7 +4,7 @@ name := "project-doc"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 resolvers ++= Seq(
   "spray repo"          at "http://repo.spray.io",
@@ -20,12 +20,12 @@ libraryDependencies ++= Seq(
   "org.webjars"           %  "foundation"       	     	  % "5.5.1",
   "org.webjars"           %  "prettify"                   % "4-Mar-2013",
   "com.googlecode.kiama"  %% "kiama"            		      % "1.8.0",
-  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "1.0.0",
+  "com.typesafe.conductr" %% "play24-conductr-bundle-lib"	% "1.0.1",
   "com.typesafe.play"     %% "play-doc"         		      % "1.2.3",
   "io.spray"              %% "spray-caching"    		      % "1.3.3",
+  "com.typesafe.akka"     %% "akka-testkit"               % "2.3.12",
   "org.scalatest"         %% "scalatest"        		      % "2.2.4" % "test",
-  "org.scalatestplus"     %% "play"             		      % "1.4.0-M3" % "test",
-  ws
+  "org.scalatestplus"     %% "play"             		      % "1.4.0-M3" % "test"
 )
 
 // Play
