@@ -1,7 +1,5 @@
 # Project Documentation
 
-[![Build Status](https://api.travis-ci.org/typesafehub/project-doc.png?branch=master)](https://travis-ci.org/typesafehub/project-doc)
-
 A general purpose project documentation website.
 
 ## Setting up development environment
