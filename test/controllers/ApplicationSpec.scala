@@ -91,12 +91,31 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
                                      |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
                                      |}""".stripMargin))
 
-      status(call(application.update(), request1)) shouldBe OK
+      contentAsString(call(application.update(), request1)) shouldBe "Site update requested"
 
       conductrDocRenderer10.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer11.expectNoMsg(500.millis)
+      conductrDocRenderer12.expectNoMsg(500.millis)
 
       val request2 =
+        FakeRequest("POST", "/")
+          .withHeaders(
+            HOST -> "conductr.typesafe.com",
+            hmacHeader -> "sha1=b12698344d3cf850c4c00d80e7223de9df569b32"
+          )
+          .withJsonBody(Json.parse("""{
+                                     |  "ref": "refs/heads/1.1",
+                                     |  "before": "0000000000000000000000000000000000000000",
+                                     |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
+                                     |}""".stripMargin))
+
+      contentAsString(call(application.update(), request2)) shouldBe "Site update requested"
+
+      conductrDocRenderer11.expectMsg(DocRenderer.PropogateGetSite)
+      conductrDocRenderer10.expectNoMsg(500.millis)
+      conductrDocRenderer12.expectNoMsg(500.millis)
+
+      val request3 =
         FakeRequest("POST", "/")
           .withHeaders(
             HOST -> "conductr.typesafe.com",
@@ -108,9 +127,10 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
                                      |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
                                      |}""".stripMargin))
 
-      status(call(application.update(), request2)) shouldBe OK
+      contentAsString(call(application.update(), request3)) shouldBe "Site update requested"
 
-      conductrDocRenderer11.expectMsg(DocRenderer.PropogateGetSite)
+      conductrDocRenderer12.expectMsg(DocRenderer.PropogateGetSite)
+      conductrDocRenderer11.expectNoMsg(500.millis)
       conductrDocRenderer10.expectNoMsg(500.millis)
     }
 
@@ -154,10 +174,11 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
     val conductrDocRenderer10 = TestProbe()
     val conductrDocRenderer11 = TestProbe()
+    val conductrDocRenderer12 = TestProbe()
     val config = ConfigFactory.load()
     val settings = new Settings(Configuration(config))
 
-    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, settings)
+    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, conductrDocRenderer12.ref, settings)
   }
 
   private def withActorSystem[T](block: ActorSystem => T): T = {
