@@ -1,10 +1,10 @@
 // General
 
 name := "project-doc"
-
 version := "1.0-SNAPSHOT"
-
 scalaVersion := "2.11.7"
+
+licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 resolvers ++= Seq(
   "spray repo"          at "http://repo.spray.io",
@@ -37,9 +37,6 @@ sassOptions in Assets ++= Seq("--compass", "-r", "compass")
 StylusKeys.useNib in Assets := true
 StylusKeys.compress in Assets := false
 
-// Project/module declarations
-lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging, PlayScala, ConductRPlugin)
-
 // ConductR
 import ByteConversions._
 
@@ -55,3 +52,13 @@ BundleKeys.endpoints := Map(
   "web" -> Endpoint("http", services = Set(URI("http://conductr.typesafe.com")))
 )
 BundleKeys.startCommand += "-Dhttp.port=$WEB_BIND_PORT -Dhttp.address=$WEB_BIND_IP"
+
+// Bundle publishing configuration
+
+inConfig(Bundle)(Seq(
+  bintrayVcsUrl := Some("https://github.com/typesafehub/project-doc"),
+  bintrayOrganization := Some("typesafe")
+))
+
+// Project/module declarations
+lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging, PlayScala, ConductRPlugin)

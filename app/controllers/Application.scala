@@ -47,9 +47,14 @@ object Application {
           val newBuffer = if (buffer.length + bytes.length <= maxBodySize) buffer ++ bytes else buffer
           (mac, newBuffer)
       }.map {
-        case _ if signature.isEmpty                                 => Left(Results.BadRequest(s"No $hmacHeader header present"))
-        case (mac, buffer) if mac.doFinal().sameElements(signature) => Right(buffer.toArray)
-        case _                                                      => Left(Results.Unauthorized("Bad signature"))
+        case _ if signature.isEmpty                                 =>
+          Left(Results.BadRequest(s"No $hmacHeader header present"))
+        case (mac, buffer) =>
+          val macBytes = mac.doFinal()
+          if (macBytes.sameElements(signature))
+            Right(buffer.toArray)
+          else
+            Left(Results.Unauthorized(s"""SHA1 signature of ${macBytes.map("%02x" format _).mkString} did not match that of the $hmacHeader header"""))
       }
     }
   }
@@ -76,6 +81,7 @@ object Application {
 class Application @Inject() (
   @Named("ConductRDocRenderer10") conductrDocRenderer10: ActorRef,
   @Named("ConductRDocRenderer11") conductrDocRenderer11: ActorRef,
+  @Named("ConductRDocRenderer12") conductrDocRenderer12: ActorRef,
   settings: Settings) extends Controller {
 
   import Application._
@@ -147,14 +153,16 @@ class Application @Inject() (
     "conductr" -> Map(
       "" -> conductrDocRenderer10,
       "1.0.x" -> conductrDocRenderer10,
-      "1.1.x" -> conductrDocRenderer11
+      "1.1.x" -> conductrDocRenderer11,
+      "1.2.x" -> conductrDocRenderer12
     )
   )
 
   private val branchesToVersions = Map(
     "conductr" -> Map(
       "1.0" -> "1.0.x",
-      "master" -> "1.1.x"
+      "1.1" -> "1.1.x",
+      "master" -> "1.2.x"
     )
   )
 
