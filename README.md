@@ -10,8 +10,8 @@ brew install node
 
 Also the project is using [sbt-sass](https://github.com/ShaggyYeti/sbt-sass) to compile Sass files to CSS. This plugin needs the Saas compiler and compass to work:
 ```
-gem install sass
-gem install compass
+sudo gem install sass
+sudo gem install compass
 ```
 
 Afterwards you can start the Play application locally:

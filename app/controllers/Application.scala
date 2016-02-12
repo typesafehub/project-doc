@@ -21,7 +21,7 @@ import scala.concurrent.Future
 object Application {
 
   private[controllers] object MacBodyParser {
-    def apply(hmacHeader: String, secret: SecretKeySpec, algorithm: String, maxBodySize: Int = 8192) =
+    def apply(hmacHeader: String, secret: SecretKeySpec, algorithm: String, maxBodySize: Int = 65536) =
       new MacBodyParser(hmacHeader, secret, algorithm, maxBodySize)
   }
 

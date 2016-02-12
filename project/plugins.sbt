@@ -1,6 +1,7 @@
 resolvers ++= Seq(
   Resolver.bintrayRepo("akka-contrib-extra", "maven"),
-  Resolver.url("GitHub repository", url("http://shaggyyeti.github.io/releases"))(Resolver.ivyStylePatterns)
+  Resolver.url("GitHub repository", url("http://shaggyyeti.github.io/releases"))(Resolver.ivyStylePatterns),
+  "Typesafe Repository" at "https://repo.typesafe.com/typesafe/maven-releases"
 )
 
 // Play plugin
