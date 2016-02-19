@@ -151,7 +151,7 @@ class Application @Inject() (
 
   private val docRenderers = Map(
     "conductr" -> Map(
-      "" -> conductrDocRenderer10,
+      "" -> conductrDocRenderer11,
       "1.0.x" -> conductrDocRenderer10,
       "1.1.x" -> conductrDocRenderer11,
       "1.2.x" -> conductrDocRenderer12
