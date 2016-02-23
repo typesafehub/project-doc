@@ -68,7 +68,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val request =
         FakeRequest("POST", "/")
           .withHeaders(
-            HOST -> "conductr.typesafe.com",
+            HOST -> "conductr.lightbend.com",
             hmacHeader -> "sha1=somerubbish"
           )
 
@@ -82,7 +82,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val request1 =
         FakeRequest("POST", "/")
           .withHeaders(
-            HOST -> "conductr.typesafe.com",
+            HOST -> "conductr.lightbend.com",
             hmacHeader -> "sha1=3e9b7bc70183ec26fa834fca39907c61b4138b6a"
           )
           .withJsonBody(Json.parse("""{
@@ -100,7 +100,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val request2 =
         FakeRequest("POST", "/")
           .withHeaders(
-            HOST -> "conductr.typesafe.com",
+            HOST -> "conductr.lightbend.com",
             hmacHeader -> "sha1=b12698344d3cf850c4c00d80e7223de9df569b32"
           )
           .withJsonBody(Json.parse("""{
@@ -118,7 +118,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val request3 =
         FakeRequest("POST", "/")
           .withHeaders(
-            HOST -> "conductr.typesafe.com",
+            HOST -> "conductr.lightbend.com",
             hmacHeader -> "sha1=fd03a52d80be9c184ab9a6318e1d1e0b5f629d71"
           )
           .withJsonBody(Json.parse("""{
@@ -141,7 +141,7 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val request =
         FakeRequest("POST", "/")
           .withHeaders(
-            HOST -> "conductr.typesafe.com",
+            HOST -> "conductr.lightbend.com",
             hmacHeader -> "sha1=a07de662e1ff3a4e5374aecd07fd480a1ebfe153"
           )
           .withJsonBody(Json.parse("""{

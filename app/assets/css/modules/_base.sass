@@ -1,6 +1,6 @@
 @import vars
 body
-    background: $navy
+    background: $lb-slate
     padding: 0
     margin: 0    
 
@@ -13,21 +13,21 @@ body
     &.flush-bottom
         padding: 60px 0 0 0
     &.grey
-        background-color: $grey
+        background-color: $lb-light-grey
     &.slate
-        background-color: $slate
+        background-color: $lb-slate
         h1,h2,h3,h4,p,a
             color: $white
     &.slate-dkr
-        background-color: $slate-dkr
+        background-color: $lb-slate-dkr
         h1,h2,h3,h4,p,a
             color: $white
     &.slate-ltr
-        background-color: $slate-ltr
+        background-color: $lb-slate-ltr
         h1,h2,h3,h4,p,a
             color: $white
     &.slate-tt
-        background-color: $slate-tt
+        background-color: $lb-slate
         h1,h2,h3,h4,p,a
             color: $white
     &.white
@@ -37,28 +37,28 @@ body
     &.white-dkr
         background-color: $white-dkr
     &.teal-blue
-        background-color: $teal-blue
+        background-color: $lb-slate
         h1,h2,h3,h4,p,a
             color: $white
     &.blue
-        background-color: $blue
+        background-color: $lb-blue
         h1,h2,h3,h4,p,a
             color: $white
     &.blue-dkr
-        background-color: $blue-dkr
+        background-color: $lb-blue-dkr
         h1,h2,h3,h4,p,a
             color: $white
     &.red
-        background-color: $red
+        background-color: $lb-orange
         h1,h2,h3,h4,p,a
             color: $white
     &.navy
-        background-color: $navy
+        background-color: $lb-slate
         box-shadow: inset 0 -3px 0 rgba(black,.1)
         h1,h2,h3,h4,p,a
             color: $white
     &.navy-ltr
-        background-color: $navy-ltr
+        background-color: $lb-slate-ltr
         h1,h2,h3,h4,p,a
             color: $white
     &.shadow
@@ -84,7 +84,7 @@ body
     background: $white
     margin: 0px 0 5px 0
     height: 75px
-    border-top: 5px solid $navy
+    border-top: 5px solid $lb-slate
     display: block
     width: 100%
     box-shadow: 0 0 8px rgba(black,.5)
@@ -105,10 +105,10 @@ body
             width: 40px
             margin-top: 15px
             .svg-icon-menu-path
-                fill: $navy
+                fill: $lb-slate
                 transition: $anime
             &:hover .svg-icon-menu-path
-                fill: $blue
+                fill: $lb-blue
                 transition: $anime
     nav
         float: right
@@ -134,15 +134,15 @@ body
                     transition: all 150ms ease-in-out
                     text-transform: uppercase
                     &:link, &:visited
-                        color: $slate-text
+                        color: $lb-slate-dkr
                     &:hover
                         background: rgba(#f0f3f6,0.2)
-                        box-shadow: inset 0 4px 0 $slate-text,inset 0 0 1px $grey-ltr
+                        box-shadow: inset 0 4px 0 $lb-slate-dkr,inset 0 0 1px $lb-light-grey-ltr
                         transition: all 150ms ease-in-out
                         text-decoration: none
                     &:active
-                        color: $slate-text
-                .svg-icon-typesafe-full-color
+                        color: $lb-slate-dkr
+                .svg-icon-company-full-color
                     width: 100px
                     height: 40px
                     margin-top: 15px
@@ -206,7 +206,7 @@ body
                 text-decoration: none
             &.active
                 background: $white-dkr
-                color: $slate-text
+                color: $lb-slate-dkr
                 padding: 3px 3px 3px 10px
                 border-radius: $br
                 &:after
@@ -234,12 +234,12 @@ body
             float: right
     #toc
         h3, h3 a
-            color: $slate-text
+            color: $lb-slate-dkr
             &:hover
                 text-decoration: none
-                color: $blue-text
+                color: $lb-blue-dkr
             &.active
-                color: $blue-text
+                color: $lb-blue-dkr
         ul
             padding-top: 14px
             margin: 0
@@ -256,12 +256,12 @@ body
                     border-bottom: 1px solid $white-ltr
                     transition: $anime
                     &.active
-                        border-left: 10px solid $blue
+                        border-left: 10px solid $lb-blue
                         border-bottom: none
                         background: $white-ltr
                         font-weight: 700
                         transition: $anime
-                        color: $slate-text
+                        color: $lb-slate-dkr
                     &:hover
                         background: $white-ltr
                         text-decoration: none
@@ -274,14 +274,14 @@ body
     color: $white
     .footer-toc a:hover
         text-decoration: none
-        color: $blue-text
+        color: $lb-blue-dkr
     .footer-toc h2
         font-size: 1em
         font-weight: 700
         text-transform: uppercase
         margin-bottom: .2rem
         > a
-            color: $red
+            color: $lb-orange
     .footer-toc ul > li > a
         color: $white
 
@@ -313,14 +313,14 @@ body
 
 .btn
     display: inline-block
-    background: $blue
+    background: $lb-blue
     padding: 0.3em 0.8em
     color: $white !important
     border-radius: $br
-    border-bottom: 2px solid $blue-text
+    border-bottom: 2px solid $lb-blue-dkr
     transition: $anime
     &:hover
-        background: $blue-dkr
+        background: $lb-blue-dkr
         transition: $anime
         text-decoration: none
 
@@ -362,7 +362,7 @@ body
     margin-right: 6px
 
 body .support-detail a:hover
-    color: $blue
+    color: $lb-blue
     text-decoration: none
 
 .section-marker

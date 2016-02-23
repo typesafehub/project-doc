@@ -49,7 +49,7 @@ BundleKeys.system := "doc-renderer-cluster-1"
 
 BundleKeys.endpoints := Map(
   "akka-remote" -> Endpoint("tcp"),
-  "web" -> Endpoint("http", services = Set(URI("http://conductr.typesafe.com")))
+  "web" -> Endpoint("http", services = Set(URI("http://conductr.lightbend.com")))
 )
 BundleKeys.startCommand += "-Dhttp.port=$WEB_BIND_PORT -Dhttp.address=$WEB_BIND_IP"
 
