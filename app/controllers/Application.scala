@@ -2,20 +2,23 @@ package controllers
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.inject.{Named, Inject}
+import javax.inject.{Inject, Named}
 
 import akka.actor.ActorRef
 import akka.pattern.{AskTimeoutException, ask}
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import doc.DocRenderer
+import play.api.http.HttpEntity
 import play.api.libs.MimeTypes
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.Iteratee
-import play.api.libs.json.{JsError, JsSuccess, Json, JsPath}
+import play.api.libs.json.{JsError, JsPath, JsSuccess, Json}
+import play.api.libs.streams.{Accumulator, Streams}
 import play.api.mvc._
 import play.twirl.api.Html
 import settings.Settings
 
-import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
 object Application {
@@ -29,33 +32,36 @@ object Application {
     hmacHeader: String,
     secret: SecretKeySpec,
     algorithm: String,
-    maxBodySize: Int) extends BodyParser[Array[Byte]] {
+    maxBodySize: Int) extends BodyParser[ByteString] {
 
     def hex2bytes(hex: String): Array[Byte] =
       hex.replaceAll("[^0-9A-Fa-f]", "").sliding(2, 2).toArray.map(Integer.parseInt(_, 16).toByte)
 
-    override def apply(request: RequestHeader): Iteratee[Array[Byte], Either[Result, Array[Byte]]] = {
+    override def apply(request: RequestHeader): Accumulator[ByteString, Either[Result, ByteString]] = {
       val hexSignature = request.headers.get(hmacHeader).map(_.dropWhile(_ != '=').drop(1)).getOrElse("")
       val signature = hex2bytes(hexSignature)
-      Iteratee.fold[Array[Byte], (Mac, ArrayBuffer[Byte])] {
-        val mac = Mac.getInstance(algorithm)
-        mac.init(secret)
-        (mac, ArrayBuffer.empty)
-      } {
-        case ((mac, buffer), bytes) =>
-          mac.update(bytes)
-          val newBuffer = if (buffer.length + bytes.length <= maxBodySize) buffer ++ bytes else buffer
-          (mac, newBuffer)
-      }.map {
-        case _ if signature.isEmpty                                 =>
-          Left(Results.BadRequest(s"No $hmacHeader header present"))
-        case (mac, buffer) =>
-          val macBytes = mac.doFinal()
-          if (macBytes.sameElements(signature))
-            Right(buffer.toArray)
-          else
-            Left(Results.Unauthorized(s"""SHA1 signature of ${macBytes.map("%02x" format _).mkString} did not match that of the $hmacHeader header"""))
-      }
+      val iteratee =
+        Iteratee.fold[ByteString, (Mac, ByteString)] {
+          val mac = Mac.getInstance(algorithm)
+          mac.init(secret)
+          (mac, ByteString.empty)
+        } {
+          case ((mac, buffer), bytes) =>
+            mac.update(bytes.toArray)
+            val newBuffer = if (buffer.length + bytes.length <= maxBodySize) buffer ++ bytes else buffer
+            (mac, newBuffer)
+        }
+        .map {
+          case _ if signature.isEmpty =>
+            Left(Results.BadRequest(s"No $hmacHeader header present"))
+          case (mac, buffer) =>
+            val macBytes = mac.doFinal()
+            if (macBytes.sameElements(signature))
+              Right(buffer)
+            else
+              Left(Results.Unauthorized(s"""SHA1 signature of ${macBytes.map("%02x" format _).mkString} did not match that of the $hmacHeader header"""))
+        }
+      Streams.iterateeToAccumulator(iteratee)
     }
   }
 
@@ -79,10 +85,10 @@ object Application {
 }
 
 class Application @Inject() (
-  @Named("ConductRDocRenderer10") conductrDocRenderer10: ActorRef,
-  @Named("ConductRDocRenderer11") conductrDocRenderer11: ActorRef,
-  @Named("ConductRDocRenderer12") conductrDocRenderer12: ActorRef,
-  settings: Settings) extends Controller {
+                              @Named("ConductRDocRenderer10") conductrDocRenderer10: ActorRef,
+                              @Named("ConductRDocRenderer11") conductrDocRenderer11: ActorRef,
+                              @Named("ConductRDocRenderer20") conductrDocRenderer20: ActorRef,
+                              settings: Settings) extends Controller {
 
   import Application._
 
@@ -124,7 +130,7 @@ class Application @Inject() (
   def update() = Action(MacBodyParser(GitHubSignature, secret, MacAlgorithm)) { request =>
     request.headers.get(HOST) match {
       case Some(host) =>
-        Json.parse(request.body).validate[String](webhookRef) match {
+        Json.parse(request.body.toArray).validate[String](webhookRef) match {
           case JsSuccess(ref, _) =>
             val branch = ref.reverse.takeWhile(_ != '/').reverse
 
@@ -154,7 +160,7 @@ class Application @Inject() (
       "" -> conductrDocRenderer11,
       "1.0.x" -> conductrDocRenderer10,
       "1.1.x" -> conductrDocRenderer11,
-      "1.2.x" -> conductrDocRenderer12
+      "2.0.x" -> conductrDocRenderer20
     )
   )
 
@@ -162,7 +168,7 @@ class Application @Inject() (
     "conductr" -> Map(
       "1.0" -> "1.0.x",
       "1.1" -> "1.1.x",
-      "master" -> "1.2.x"
+      "master" -> "2.0.x"
     )
   )
 
@@ -171,10 +177,10 @@ class Application @Inject() (
 
   private def renderResource(resource: DocRenderer.Resource, path: String): Result = {
     val fileName = path.drop(path.lastIndexOf('/') + 1)
-    Result(ResponseHeader(OK, Map[String, String](
-      CONTENT_LENGTH -> resource.size.toString,
-      CONTENT_TYPE   -> MimeTypes.forFileName(fileName).getOrElse(BINARY)
-    )), resource.content)
+    val bodyPublisher = Streams.enumeratorToPublisher(resource.content)
+    val bodySource = Source.fromPublisher(bodyPublisher)
+    val entity = HttpEntity.Streamed(bodySource.map(ByteString(_)), Some(resource.size), Some(MimeTypes.forFileName(fileName).getOrElse(BINARY)))
+    Ok.sendEntity(entity)
   }
 
 }

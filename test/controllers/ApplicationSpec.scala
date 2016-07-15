@@ -3,13 +3,16 @@ package controllers
 import javax.crypto.spec.SecretKeySpec
 
 import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import akka.testkit.TestProbe
+import akka.util.ByteString
 import com.typesafe.config.ConfigFactory
 import doc.DocRenderer
 import org.scalatest.{EitherValues, Matchers, WordSpecLike}
 import play.api.Configuration
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.json.Json
+import play.api.libs.streams.Streams
 import play.api.test._
 import play.api.test.Helpers._
 import settings.Settings
@@ -18,29 +21,34 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
+
   "MacBodyParser" should {
-    "produce a unit when the body digest matches the signature" in {
+    "produce the body when the body digest matches the signature" in withActorSystem { implicit system =>
       val fixtures = macBodyParserFixtures()
       import fixtures._
+
+      implicit val mat = ActorMaterializer()
 
       val request = FakeRequest("GET", "/").withHeaders(hmacHeader -> s"sha1=1f30c9572859472be574afa5dcc641d3184894bb")
       val bodyParser = Application.MacBodyParser(hmacHeader, secret, algorithm)
 
-      val bodyBytes = body.getBytes("UTF-8")
-      val result = Enumerator(bodyBytes) |>>> bodyParser(request)
+      val bodyBytes = ByteString(body)
+      val result = Enumerator(bodyBytes) |>>> Streams.accumulatorToIteratee(bodyParser(request))
       Await.result(result, 5.seconds).right.value shouldBe bodyBytes
     }
 
-    "produce an unauthorized result when the signature in the header has an invalid value" in {
+    "produce an unauthorized result when the signature in the header has an invalid value" in withActorSystem { implicit system =>
       val fixtures = macBodyParserFixtures()
       import fixtures._
+
+      implicit val mat = ActorMaterializer()
 
       val signature = Array[Byte](0, 1, 2)
 
       val request = FakeRequest("GET", "/").withHeaders(hmacHeader -> bytes2hex(signature))
       val bodyParser = Application.MacBodyParser(hmacHeader, secret, algorithm)
 
-      val result = Enumerator(body.getBytes("UTF-8")) |>>> bodyParser(request)
+      val result = Enumerator(ByteString(body)) |>>> Streams.accumulatorToIteratee(bodyParser(request))
       Await.result(result, 5.seconds).isLeft shouldBe true
     }
   }
@@ -56,6 +64,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val fixtures = controllerFixtures(system)
       import fixtures._
 
+      implicit val mat = ActorMaterializer()
+
       val request = FakeRequest("POST", "/")
 
       status(call(application.update(), request)) shouldBe BAD_REQUEST
@@ -64,6 +74,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
     "reject unauthorized webhooks" in withActorSystem { system =>
       val fixtures = controllerFixtures(system)
       import fixtures._
+
+      implicit val mat = ActorMaterializer()
 
       val request =
         FakeRequest("POST", "/")
@@ -79,6 +91,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
       val fixtures = controllerFixtures(system)
       import fixtures._
 
+      implicit val mat = ActorMaterializer()
+
       val request1 =
         FakeRequest("POST", "/")
           .withHeaders(
@@ -91,7 +105,9 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
                                      |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
                                      |}""".stripMargin))
 
-      contentAsString(call(application.update(), request1)) shouldBe "Site update requested"
+      val result1 = call(application.update(), request1)
+      status(result1) shouldBe OK
+      contentAsString(result1) shouldBe "Site update requested"
 
       conductrDocRenderer10.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer11.expectNoMsg(500.millis)
@@ -109,7 +125,9 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
                                      |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
                                      |}""".stripMargin))
 
-      contentAsString(call(application.update(), request2)) shouldBe "Site update requested"
+      val result2 = call(application.update(), request2)
+      status(result2) shouldBe OK
+      contentAsString(result2) shouldBe "Site update requested"
 
       conductrDocRenderer11.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer10.expectNoMsg(500.millis)
@@ -127,7 +145,10 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
                                      |  "after": "335aa74f382a36c7a3594a8fec14fdd2ac754cb2"
                                      |}""".stripMargin))
 
-      contentAsString(call(application.update(), request3)) shouldBe "Site update requested"
+      val result3 = call(application.update(), request3)
+      status(result3) shouldBe OK
+
+      contentAsString(result3) shouldBe "Site update requested"
 
       conductrDocRenderer12.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer11.expectNoMsg(500.millis)
@@ -137,6 +158,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
     "silenty reject webhooks specifying branches we don't know about" in withActorSystem { system =>
       val fixtures = controllerFixtures(system)
       import fixtures._
+
+      implicit val mat = ActorMaterializer()
 
       val request =
         FakeRequest("POST", "/")
