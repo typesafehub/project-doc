@@ -46,12 +46,12 @@ object ConductRDocRendererModule {
     )
 
   @Singleton
-  class ConductRDocRendererProvider12 @Inject()(actorSystem: ActorSystem, wsClient: WSClient)
+  class ConductRDocRendererProvider20 @Inject()(actorSystem: ActorSystem, wsClient: WSClient)
     extends ConductRDocRendererProvider(
       actorSystem,
       wsClient,
       new URI("https://github.com/typesafehub/conductr-doc/archive/master.zip"),
-      "1.2.x"
+      "2.0.x"
     )
 }
 
@@ -62,6 +62,6 @@ class ConductRDocRendererModule extends Module {
                configuration: Configuration) = Seq(
     bind[ActorRef].qualifiedWith("ConductRDocRenderer10").toProvider[ConductRDocRendererProvider10],
     bind[ActorRef].qualifiedWith("ConductRDocRenderer11").toProvider[ConductRDocRendererProvider11],
-    bind[ActorRef].qualifiedWith("ConductRDocRenderer12").toProvider[ConductRDocRendererProvider12]
+    bind[ActorRef].qualifiedWith("ConductRDocRenderer20").toProvider[ConductRDocRendererProvider20]
   )
 }

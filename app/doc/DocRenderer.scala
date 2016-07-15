@@ -1,24 +1,26 @@
 package doc
 
-import java.io.{InputStream, FileNotFoundException, File, FileOutputStream}
+import java.io.{File, FileNotFoundException, FileOutputStream}
 import java.net.URI
-import java.nio.file.{Paths, Path, Files}
-import akka.actor.{ActorLogging, Actor, Props}
+import java.nio.file.{Files, Path}
+
+import akka.actor.{Actor, ActorLogging, Props}
 import akka.cluster.Cluster
-import akka.contrib.datareplication.{GCounter, DataReplication}
-import akka.contrib.datareplication.Replicator.{Changed, Update, WriteLocal, Subscribe}
+import akka.cluster.ddata.{DistributedData, GCounter, GCounterKey}
+import akka.cluster.ddata.Replicator.{Changed, Subscribe, Update, WriteLocal}
 import akka.pattern.pipe
 import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.io.{FileUtils, IOUtils}
 import play.api.libs.iteratee.{Enumerator, Iteratee}
-import play.api.libs.ws.{WSResponseHeaders, WSClient}
-import play.doc.{PageIndex, PlayDoc, FilesystemRepository}
+import play.api.libs.ws.{WSClient, WSResponseHeaders}
+import play.doc.{FilesystemRepository, PageIndex, PlayDoc}
 import play.twirl.api.Html
 import spray.caching.{Cache, LruCache}
 import views.html.conductr.body
+
 import scala.collection.immutable
 import scala.collection.JavaConverters._
-import scala.concurrent.{Future, blocking, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future, blocking}
 
 object DocRenderer {
 
@@ -178,7 +180,7 @@ class DocRenderer(
   import DocRenderer._
   import context.dispatcher
 
-  val replicator = DataReplication(context.system).replicator
+  val replicator = DistributedData(context.system).replicator
   implicit val cluster = Cluster(context.system)
 
   override def preStart(): Unit = {
@@ -219,12 +221,12 @@ class DocRenderer(
       log.info(s"Notifying cluster of change for $docArchive")
       replicator ! Update(siteUpdateCounter, GCounter(), WriteLocal)(_ + 1)
 
-    case Changed(siteUpdateCounter, _: GCounter) =>
+    case Changed(siteUpdateCounter) =>
       self ! GetSite
   }
 
-  private def siteUpdateCounter: String =
-    s"$SiteUpdateCounter/${self.path.name}/$version"
+  private def siteUpdateCounter: GCounterKey =
+    GCounterKey(s"$SiteUpdateCounter/${self.path.name}/$version")
 
   private def handleUnready: Receive = {
     case _ => sender() ! NotReady

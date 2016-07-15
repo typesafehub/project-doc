@@ -5,12 +5,12 @@ resolvers ++= Seq(
 )
 
 // Play plugin
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.2")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.3")
 
 // Web plugins
 addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 addSbtPlugin("default"          % "sbt-sass"   % "0.1.9")
 
 // ConductR
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr"         % "1.2.1")
-addSbtPlugin("com.typesafe.sbt"      % "sbt-bintray-bundle"   % "1.0.1")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr"        % "2.1.6")
+addSbtPlugin("com.typesafe.sbt"       % "sbt-bintray-bundle"  % "1.0.2")

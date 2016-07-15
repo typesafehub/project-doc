@@ -5,23 +5,30 @@
     <div class="fw-wrapper page-content">
         <div class="row">
             <div class="small-12">
-                <h1>Today’s demands on Operations are simply not met by yesterday’s software architectures and technologies</h1>
-                <p>ConductR is a solution for managing Lightbend Reactive Platform applications across a cluster of machines. ConductR is reactive from the ground up thus enabling operations to provide the resiliency required to unleash the full benefits of the Lightbend Reactive Platform in their organization.</p>
+                <h1>Managing microservices with the "batteries included"</h1>
 
-                <p>ConductR moves beyond simply running multiple instances of the services that are your applications. With ConductR, we deploy applications, in the form of archives of components together with their configuration metadata, to the cluster. ConductR is a deployment target for the next generation of applications as we continue the progression up the infrastructure stack from bare hardware, to virtual machines, to IaaS and now clusters.</p>
+                <p>Distributed systems are required for microservices and they can benefit a business greatly given their potential
+                    for increased availability.
+                    However writing distributed systems is hard and managing them is even harder.
+                    When you can no longer name your machines or count them on one hand then you need something to help you.
 
-                <p>For teams using tools like Chef, Puppet, Ansible and Terraform, ConductR simplifies the task of clustering Reactive Platform applications. Without ConductR, the provisioning and configuration playbooks also install and configure applications as part of provisioning cluster nodes. With ConductR, this layer now only needs to install and configure ConductR. The configuration and management of the applications running of the cluster is treated as the separate concern that it is.</p>
+                <p>ConductR is a "batteries included" approach to managing distributed systems.
+                No more cobbling together of service gateways, service locators, consolidated logging, monitoring and so forth.
+                All of these essential items and more are included with ConductR. In fact we want ConductR to be to operations
+                what Play and Lagom are to developers; we want operations to be productive so that they can concentrate on keeping
+                their business customers happy.
 
-                <p>ConductR’s design was influenced by Mesos by adopting its notion of resource requests and offers, and support for Docker containers for example. ConductR runs stand-alone and is also planned to be available as a Mesos framework later this year. ConductR is also a refreshing alternative to using Apache ZooKeeper for service discovery in your applications and services.</p>
+                <p>ConductR is also the easiest way to manage Akka cluster based applications, and laser-focused on ensuring that
+                    Lightbend Reactive Platform applications can be managed with ease. ConductR guides you regarding distributed
+                    concerns when embarking on developing a project; not as an after-thought when you near that release deadline.
 
-                <img src="@routes.Assets.at("images/svg/conductR-and-reactive-system-architecture.svg")">
+                <p>Please refer to the <a href="https://www.lightbend.com/product/conductr/developer">getting started page</a>
+                if you simply want to download ConductR and have it run on your local machine for non-production purposes. Otherwise
+                head on over to the <a href="@routes.Application.renderDocsHome("")">documentation</a> in order to find out
+                all that you need to know.
 
-                <p>ConductR is light-weight and highly resilient. Each node runs the ConductR process, a proxy (HAproxy) and conductr-haproxy; a reactive configuration process. This combination enables any node in the cluster to proxy requests for any service endpoint of the cluster leaving no single point of failure. ConductR leverages Akka clustering, data replication, FSM (Finite State Machine), reactive streams, CRDTs and more to provide the must have features such as consolidated logging, service discovery and rolling upgrades.</p>
-
-                <p>Our goal is that ConductR becomes known to the operator in a similar way to how Play is now known to the developer: a productive and joyful experience. Enjoy!</p>
-
-                <p>Warm regards,
-                <br/>The ConductR Team</p>
+                <p>Welcome to ConductR,
+                <br/>The Global ConductR Team
             </div>
         </div>
     </div>
