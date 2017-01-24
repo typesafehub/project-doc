@@ -27,6 +27,12 @@ object HtmlPrettyPrinter extends PrettyPrinter {
   def a(name: String, ref: URI): Doc =
     angles("a" <+> "href" <> "=" <> dquotes(ref.toString)) <> name <> angles(forwslash <> "a")
 
+  def select(d: Doc, clazz: Option[String] = None, onChange: String): Doc =
+    angles("select" <+> "onchange" <> "=" <> dquotes(onChange) <> parseClass(clazz)) <> d <> angles(forwslash <> "select")
+
+  def option(d: Doc, value: String, selected: Boolean): Doc =
+    angles("option" <+> "value" <> "=" <> dquotes(value) <+> (if (selected) "selected" else empty)) <> d <> angles(forwslash <> "option")
+
   def p(d: Doc): Doc =
     angles(s"p") <> d <> angles(forwslash <> s"p")
 

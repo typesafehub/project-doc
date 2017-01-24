@@ -88,6 +88,7 @@ class Application @Inject() (
                               @Named("ConductRDocRenderer10") conductrDocRenderer10: ActorRef,
                               @Named("ConductRDocRenderer11") conductrDocRenderer11: ActorRef,
                               @Named("ConductRDocRenderer20") conductrDocRenderer20: ActorRef,
+                              @Named("ConductRDocRenderer21") conductrDocRenderer21: ActorRef,
                               settings: Settings) extends Controller {
 
   import Application._
@@ -157,10 +158,11 @@ class Application @Inject() (
 
   private val docRenderers = Map(
     "conductr" -> Map(
-      "" -> conductrDocRenderer11,
+      "" -> conductrDocRenderer20,
       "1.0.x" -> conductrDocRenderer10,
       "1.1.x" -> conductrDocRenderer11,
-      "2.0.x" -> conductrDocRenderer20
+      "2.0.x" -> conductrDocRenderer20,
+      "2.1.x" -> conductrDocRenderer21
     )
   )
 
@@ -168,7 +170,8 @@ class Application @Inject() (
     "conductr" -> Map(
       "1.0" -> "1.0.x",
       "1.1" -> "1.1.x",
-      "master" -> "2.0.x"
+      "2.0" -> "2.0.x",
+      "master" -> "2.1.x"
     )
   )
 
