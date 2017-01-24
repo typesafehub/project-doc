@@ -74,8 +74,9 @@ object DocRenderer {
     docRoot: Path,
     docUri: String,
     version: String,
+    versions: immutable.Seq[String],
     wsClient: WSClient): Props =
-    Props(new DocRenderer(docArchive, removeRootSegmentOfArchive, docRoot, docUri, version, wsClient))
+    Props(new DocRenderer(docArchive, removeRootSegmentOfArchive, docRoot, docUri, version, versions, wsClient))
   
   private[doc] def unzip(input: Enumerator[Array[Byte]], removeRootSegment: Boolean)(implicit ec: ExecutionContext): Future[Path] = {
     val archive = Files.createTempFile(null, null)
@@ -138,10 +139,23 @@ object DocRenderer {
     Html(HtmlPrettyPrinter.pretty(markup))
   }
 
-  private def aggregateToolbar(version: String): Html = {
+  private def aggregateToolbar(version: String, versions: immutable.Seq[String], docUri: String): Html = {
     import HtmlPrettyPrinter._
 
-    val markup = nav(id = Some("toolbar"), d = h3("Version") <> div(clazz = Some("versionNumber"), d = h3(version)))
+    val optionMarkup = for {
+      v <- versions
+    } yield {
+      option(v, value = docUri.reverse.dropWhile(_ != '/').reverse + v, selected=v == version)
+    }
+    val markup =
+      nav(
+        id = Some("toolbar"),
+        d = select(
+          clazz = Some("versionNumber"),
+          d = nest(lsep(optionMarkup, softbreak)),
+          onChange = "if (this.value) window.location.href=this.value"
+        )
+      )
     Html(HtmlPrettyPrinter.pretty(markup))
   }
 
@@ -175,6 +189,7 @@ class DocRenderer(
   docRoot: Path,
   docUri: String,
   version: String,
+  versions: immutable.Seq[String],
   wsClient: WSClient) extends Actor with ActorLogging {
 
   import DocRenderer._
@@ -204,7 +219,7 @@ class DocRenderer(
 
       val docSources = docDir.resolve(docRoot)
       val toc = aggregateToc(docSources, docUri)
-      val toolbar = aggregateToolbar(version)
+      val toolbar = aggregateToolbar(version, versions, docUri)
 
       val repo = new FilesystemRepository(docSources.toFile)
       val mdRenderer = new PlayDoc(

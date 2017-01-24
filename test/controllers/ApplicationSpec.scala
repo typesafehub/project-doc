@@ -111,7 +111,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
       conductrDocRenderer10.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer11.expectNoMsg(500.millis)
-      conductrDocRenderer12.expectNoMsg(500.millis)
+      conductrDocRenderer20.expectNoMsg(500.millis)
+      conductrDocRenderer21.expectNoMsg(500.millis)
 
       val request2 =
         FakeRequest("POST", "/")
@@ -131,7 +132,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
       conductrDocRenderer11.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer10.expectNoMsg(500.millis)
-      conductrDocRenderer12.expectNoMsg(500.millis)
+      conductrDocRenderer20.expectNoMsg(500.millis)
+      conductrDocRenderer21.expectNoMsg(500.millis)
 
       val request3 =
         FakeRequest("POST", "/")
@@ -150,7 +152,8 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
       contentAsString(result3) shouldBe "Site update requested"
 
-      conductrDocRenderer12.expectMsg(DocRenderer.PropogateGetSite)
+      conductrDocRenderer21.expectNoMsg(500.millis)
+      conductrDocRenderer20.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer11.expectNoMsg(500.millis)
       conductrDocRenderer10.expectNoMsg(500.millis)
     }
@@ -197,11 +200,12 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
     val conductrDocRenderer10 = TestProbe()
     val conductrDocRenderer11 = TestProbe()
-    val conductrDocRenderer12 = TestProbe()
+    val conductrDocRenderer20 = TestProbe()
+    val conductrDocRenderer21 = TestProbe()
     val config = ConfigFactory.load()
     val settings = new Settings(Configuration(config))
 
-    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, conductrDocRenderer12.ref, settings)
+    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, conductrDocRenderer20.ref, conductrDocRenderer21.ref, settings)
   }
 
   private def withActorSystem[T](block: ActorSystem => T): T = {
