@@ -223,14 +223,48 @@ body
     border-radius: $br
     border: 1px solid $white-dkr
     border-bottom: 3px solid $white-dkr
+    #search
+        padding: 1em 20px
+        border-bottom: 1px solid $white-ltr
+        #search-box
+            width: 100%
+            padding: .5rem
+        .algolia-autocomplete
+            display: inherit !important
+            .algolia-docsearch-suggestion--category-header
+                background: $white
+                color: $lb-slate-dkr
+            .algolia-docsearch-suggestion--highlight
+                color: $lb-blue-dkr
+                background: $white-ltr
+            .algolia-docsearch-suggestion--title
+                color: $lb-slate-dkr
+            .algolia-docsearch-suggestion--content:hover
+                background: $white-ltr
+            .ds-suggestion.ds-cursor .algolia-docsearch-suggestion--content
+                background: $white-ltr
+            .algolia-docsearch-suggestion--content::before
+                background: $lb-blue
     #toolbar
-        padding: 1em 20px .5em
+        padding: 1em 20px
         margin-bottom: 1em
         border-bottom: 1px solid $white-ltr
+        label
+            font-size: .875rem
+            line-height: 1.6
         h3
             display: inline-block
             font-weight: 500
-        .versionNumber
+        select
+            padding: .5rem
+            border-radius: 0
+            -webkit-appearance: none
+            -moz-appearance: none
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: rgb%28138, 138, 138%29"></polygon></svg>')
+            background-size: 9px 6px
+            background-position: 100%
+            background-origin: content-box
+            background-repeat: no-repeat
     #toc
         h3, h3 a
             color: $lb-slate-dkr
