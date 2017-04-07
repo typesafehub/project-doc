@@ -1,4 +1,4 @@
-@(b: Html, toolbar: Html, toc: Html)
+@(b: Html, toolbar: Html, toc: Html, version: String)
 
 @scripts = {
     <script>
@@ -15,6 +15,18 @@
 
     <!-- Code syntax highlighter -->
     <script src="@routes.Assets.at("lib/prettify/run_prettify.js")"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+    <script type="text/javascript">
+        docsearch({
+            apiKey: "8d99036b8f48860b78be62813246b9b4",
+            indexName: "lightbend",
+            inputSelector: "#search-box",
+            algoliaOptions: {
+               facetFilters: ["version:@version"]
+            }
+        })
+    </script>
 }
 
 @main("ConductR - A Reactive Application Manager for Operations", Some(toc), additionalScripts = Some(scripts)) {
@@ -27,6 +39,9 @@
             <div class="medium-4 large-3 hide-for-small-only columns">
                 <div id="sidebar">
                     <aside>
+                        <nav id="search">
+                            <input type="text" id="search-box" placeholder="Search">
+                        </nav>
                         @toolbar
                         <div id="toc">
                             @toc

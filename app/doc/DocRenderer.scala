@@ -150,11 +150,14 @@ object DocRenderer {
     val markup =
       nav(
         id = Some("toolbar"),
-        d = select(
-          clazz = Some("versionNumber"),
-          d = nest(lsep(optionMarkup, softbreak)),
-          onChange = "if (this.value) window.location.href=this.value"
-        )
+        d =
+          select(
+            id = "toolbar-select",
+            label = Some("Version"),
+            clazz = Some("versionNumber"),
+            d = nest(lsep(optionMarkup, softbreak)),
+            onChange = "if (this.value) window.location.href=this.value"
+          )
       )
     Html(HtmlPrettyPrinter.pretty(markup))
   }
@@ -254,7 +257,7 @@ class DocRenderer(
     case Render(path) if !path.contains(".") =>
       cache(path) {
         mdRenderer.renderPage(path) match {
-          case Some(renderedPage) => body(Html(renderedPage.html), toolbar, toc)
+          case Some(renderedPage) => body(Html(renderedPage.html), toolbar, toc, version)
           case None               => throw new FileNotFoundException(path)
         }
       }.recover {
