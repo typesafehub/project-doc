@@ -49,7 +49,7 @@ BundleKeys.systemVersion := "2"
 
 BundleKeys.endpoints := Map(
   "akka-remote" -> Endpoint("tcp"),
-  "web" -> Endpoint("http", services = Set(URI("http://conductr.lightbend.com")))
+  "web" -> Endpoint("http", 0, acls = RequestAcl(Http("^/".r))))
 )
 
 // Bundle publishing configuration

@@ -12,5 +12,5 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 addSbtPlugin("default"          % "sbt-sass"   % "0.1.9")
 
 // ConductR
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr"        % "2.1.6")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr"        % "2.3.4")
 addSbtPlugin("com.typesafe.sbt"       % "sbt-bintray-bundle"  % "1.0.2")
