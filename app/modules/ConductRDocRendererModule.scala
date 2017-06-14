@@ -34,7 +34,8 @@ object ConductRDocRendererModule {
     "1.0.x",
     "1.1.x",
     "2.0.x",
-    "2.1.x"
+    "2.1.x",
+    "2.2.x"
   )
 
   @Singleton
@@ -72,8 +73,18 @@ object ConductRDocRendererModule {
     extends ConductRDocRendererProvider(
       actorSystem,
       wsClient,
-      new URI("https://github.com/typesafehub/conductr-doc/archive/master.zip"),
+      new URI("https://github.com/typesafehub/conductr-doc/archive/2.1.zip"),
       "2.1.x",
+      versions
+    )
+
+  @Singleton
+  class ConductRDocRendererProvider22 @Inject()(actorSystem: ActorSystem, wsClient: WSClient)
+    extends ConductRDocRendererProvider(
+      actorSystem,
+      wsClient,
+      new URI("https://github.com/typesafehub/conductr-doc/archive/master.zip"),
+      "2.2.x",
       versions
     )
 }
@@ -86,6 +97,7 @@ class ConductRDocRendererModule extends Module {
     bind[ActorRef].qualifiedWith("ConductRDocRenderer10").toProvider[ConductRDocRendererProvider10],
     bind[ActorRef].qualifiedWith("ConductRDocRenderer11").toProvider[ConductRDocRendererProvider11],
     bind[ActorRef].qualifiedWith("ConductRDocRenderer20").toProvider[ConductRDocRendererProvider20],
-    bind[ActorRef].qualifiedWith("ConductRDocRenderer21").toProvider[ConductRDocRendererProvider21]
+    bind[ActorRef].qualifiedWith("ConductRDocRenderer21").toProvider[ConductRDocRendererProvider21],
+    bind[ActorRef].qualifiedWith("ConductRDocRenderer22").toProvider[ConductRDocRendererProvider22]
   )
 }

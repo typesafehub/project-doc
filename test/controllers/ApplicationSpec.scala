@@ -152,8 +152,9 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
 
       contentAsString(result3) shouldBe "Site update requested"
 
+      conductrDocRenderer22.expectMsg(DocRenderer.PropogateGetSite)
       conductrDocRenderer21.expectNoMsg(500.millis)
-      conductrDocRenderer20.expectMsg(DocRenderer.PropogateGetSite)
+      conductrDocRenderer20.expectNoMsg(500.millis)
       conductrDocRenderer11.expectNoMsg(500.millis)
       conductrDocRenderer10.expectNoMsg(500.millis)
     }
@@ -202,10 +203,11 @@ class ApplicationSpec  extends WordSpecLike with Matchers with EitherValues {
     val conductrDocRenderer11 = TestProbe()
     val conductrDocRenderer20 = TestProbe()
     val conductrDocRenderer21 = TestProbe()
+    val conductrDocRenderer22 = TestProbe()
     val config = ConfigFactory.load()
     val settings = new Settings(Configuration(config))
 
-    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, conductrDocRenderer20.ref, conductrDocRenderer21.ref, settings)
+    val application = new Application(conductrDocRenderer10.ref, conductrDocRenderer11.ref, conductrDocRenderer20.ref, conductrDocRenderer21.ref, conductrDocRenderer22.ref, settings)
   }
 
   private def withActorSystem[T](block: ActorSystem => T): T = {
