@@ -56,7 +56,8 @@ BundleKeys.endpoints := Map(
 
 inConfig(Bundle)(Seq(
   bintrayVcsUrl := Some("https://github.com/typesafehub/project-doc"),
-  bintrayOrganization := Some("typesafe")
+  bintrayOrganization := Some("typesafe"),
+  bintrayReleaseOnPublish := true
 ))
 
 // Project/module declarations
