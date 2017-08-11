@@ -1,3 +1,8 @@
 jdk: oraclejdk8
 language: scala
-script: sbt test
+script:
+  - git show HEAD
+  - env | sort
+  - sbt test
+  - if [ "$TRAVIS_BRANCH" = "travis-cd-setup" ]; then sbt bundle:publish; fi
+
