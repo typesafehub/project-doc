@@ -6,3 +6,11 @@ script:
   - sbt test
   - if [ "$TRAVIS_BRANCH" = "travis-cd-setup" ]; then sbt bundle:publish; fi
 
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/launchers
+
+before_cache:
+  # Delete all ivydata files since ivy touches them on each build
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
